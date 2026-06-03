@@ -1,0 +1,31 @@
+name: Run sentiment model
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Train the model
+        run: python train.py
+
+      - name: Evaluate the model
+        run: python evaluate.py
+
+      - name: Try example predictions
+        run: |
+          python predict.py "The support team was fantastic and solved my issue in minutes"
+          python predict.py "This product is terrible and stopped working immediately"
