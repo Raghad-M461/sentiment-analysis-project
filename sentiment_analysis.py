@@ -1,49 +1,26 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
+from sklearn.model_selection import cross_val_score, StratifiedKFold
 
-# Training dataset
+# 1) The dataset: are short customer feedback sentences, each labelled
+#    as Positive or Negative.
+
 texts = [
-    "The service was excellent",
-    "I loved the experience",
-    "Very professional support team",
-    "Terrible customer support",
-    "Very disappointing experience",
-    "The application crashes constantly"
-]
-
-labels = [
-    "Positive",
-    "Positive",
-    "Positive",
-    "Negative",
-    "Negative",
-    "Negative"
-]
-
-# Convert text into numbers
-vectorizer = TfidfVectorizer()
-
-X = vectorizer.fit_transform(texts)
-
-# Train AI model
-model = LogisticRegression()
-
-model.fit(X, labels)
-
-# Test predictions
-test_texts = [
-    "The support team solved my problem quickly",
-    "The software is terrible"
-]
-
-test_vectors = vectorizer.transform(test_texts)
-
-predictions = model.predict(test_vectors)
-
-# Print predictions
-print("Sentiment Predictions:\n")
-
-for text, prediction in zip(test_texts, predictions):
-    print(text)
-    print("Prediction:", prediction)
-    print()
+    'A fantastic quality overall.',
+    'A friendly update overall.',
+    'A great website overall.',
+    'A helpful delivery overall.',
+    'A perfect service overall.',
+    'A reliable service overall.',
+    'A wonderful onboarding overall.',
+    'An impressive product overall.',
+    'Honestly the dashboard is great.',
+    'Honestly the service is impressive.',
+    'Honestly the setup process is perfect.',
+    'I found the delivery really impressive.',
+    'I found the experience really outstanding.',
+    'I found the platform really great.',
+    'I found the service really wonderful.',
+    'I found the tool really impressive.',
+    'I found the update reall
