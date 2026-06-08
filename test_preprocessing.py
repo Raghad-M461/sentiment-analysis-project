@@ -1,13 +1,4 @@
-"""
-Minimal tests for the preprocessing pipeline.
 
-Run with:  python3 test_preprocessing.py
-(or `pytest test_preprocessing.py` if you have pytest installed)
-
-These act as a regression guard: if a future change silently alters the
-behaviour of a step, a test fails instead of the difference slipping into
-your experiment results unnoticed.
-"""
 
 from preprocessing import preprocess
 
@@ -23,7 +14,6 @@ def test_negation_scope_marks_following_words():
 
 
 def test_negation_scope_closes_at_punctuation():
-    # "good" comes after the comma, so it must NOT be negated.
     out = preprocess("not bad, good overall", return_tokens=True)
     assert "neg_bad" in out
     assert "neg_good" not in out
@@ -31,8 +21,7 @@ def test_negation_scope_closes_at_punctuation():
 
 
 def test_sentiment_stopwords_are_preserved():
-    # Disable negation marking so we test the stop-word step in isolation;
-    # otherwise "very"/"not" would (correctly) be inside a negation scope.
+   
     out = preprocess("this is not very good", handle_negation=False, return_tokens=True)
     assert "not" in out          # negator kept, not stripped as a stop word
     assert "very" in out         # intensifier kept
