@@ -1,26 +1,9 @@
 """
-Reusable text-preprocessing pipeline for sentiment analysis.
+Reusable preprocessing function created for Task 6.
 
-Every transformation is an independently toggleable flag. This is deliberate:
-the point of the task is not to find one "best" pipeline but to be able to run
-controlled experiments — turn a single step on/off, hold everything else fixed,
-and measure how that one decision moves classification performance.
+This function applies common NLP preprocessing techniques such as lowercasing, tokenization, stop-word removal, stemming, lemmatization, punctuation removal, and negation handling.
 
-Design choices that matter for *sentiment* specifically:
-  * Negation cues ("not", "never", "n't", ...) are preserved and used to mark
-    the words inside their scope (the classic Pang, Lee & Vaithyanathan 2002
-    approach), so "not good" and "good" don't collapse into the same features.
-  * Stop-word removal uses a sentiment-safe list: generic stop lists delete
-    "not", "no", "but", "very", etc., which carry or modify polarity, so we
-    explicitly keep those.
-  * Lemmatization is preferred over stemming by default (real words, less
-    aggressive conflation), but both are available for comparison.
-
-Usage:
-    from preprocessing import preprocess
-    preprocess("I did NOT like this movie at all!!!")
-    preprocess(text, remove_stopwords=False, lemmatize=False, stem=True)
-    preprocess(text, return_tokens=True)
+The settings can be changed easily so I can test how different preprocessing methods affect sentiment analysis results.
 """
 
 from __future__ import annotations
@@ -34,10 +17,8 @@ from nltk.stem import PorterStemmer, WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
 
-# --------------------------------------------------------------------------- #
-# One-time resource bootstrap. Safe to call repeatedly; only downloads if the
-# resource is missing, so importing the module never re-fetches data.
-# --------------------------------------------------------------------------- #
+# it will download NLTK resources needed for preprocessing and resources that already exist will not be downloaded again.
+
 def _ensure_nltk_data() -> None:
     resources = [
         ("tokenizers/punkt", "punkt"),
@@ -55,15 +36,13 @@ def _ensure_nltk_data() -> None:
 
 _ensure_nltk_data()
 
-# Reuse single instances — constructing these per call is wasteful.
 _STEMMER = PorterStemmer()
 _LEMMATIZER = WordNetLemmatizer()
 
-# Prefix attached to tokens that fall inside a negation scope.
 _NEG_PREFIX = "neg_"
 
-# Negation cues that flip the polarity of words that follow them.
-# "n't" is included because word_tokenize splits "don't" -> ["do", "n't"].
+# Negation words such as not, no, never, and n't. NLTK separates contractions like "don't" into "do" and "n't".
+
 NEGATION_WORDS = {
     "not", "no", "never", "none", "nobody", "nothing", "neither",
     "nor", "nowhere", "cannot", "cant", "couldnt", "wouldnt", "shouldnt",
@@ -71,11 +50,9 @@ NEGATION_WORDS = {
     "hasnt", "havent", "hadnt", "aint", "n't",
 }
 
-# A negation scope ends at clause boundaries / contrast words / punctuation.
 _NEGATION_STOPPERS = {".", ",", ";", ":", "!", "?", "but", "however", "though"}
 
-# Words a sentiment model should keep even if a generic stop list removes them:
-# negators plus intensifiers and contrast markers all change meaning/polarity.
+
 SENTIMENT_KEEP = NEGATION_WORDS | {
     "very", "too", "so", "more", "most", "only", "just",
     "but", "however", "against", "off", "down", "up",
@@ -84,16 +61,11 @@ SENTIMENT_KEEP = NEGATION_WORDS | {
 
 @lru_cache(maxsize=1)
 def _sentiment_stopwords() -> frozenset[str]:
-    """English stop words minus the tokens that carry sentiment signal."""
     return frozenset(set(stopwords.words("english")) - SENTIMENT_KEEP)
 
 
 def _mark_negation(tokens: list[str]) -> list[str]:
-    """Prefix every token inside a negation scope with ``neg_``.
-
-    A scope opens at a negation cue and closes at the next stopper token,
-    so "not very good , but ok" -> not neg_very neg_good , but ok.
-    """
+   
     out, negating = [], False
     for tok in tokens:
         if tok in _NEGATION_STOPPERS:
@@ -108,8 +80,7 @@ def _mark_negation(tokens: list[str]) -> list[str]:
 
 
 def _normalize(token: str, *, lemmatize: bool, stem: bool) -> str:
-    """Lemmatize or stem a token while preserving any ``neg_`` prefix."""
-    prefix, core = "", token
+   token
     if token.startswith(_NEG_PREFIX):
         prefix, core = _NEG_PREFIX, token[len(_NEG_PREFIX):]
     if lemmatize:
@@ -130,29 +101,7 @@ def preprocess(
     stem: bool = False,
     return_tokens: bool = False,
 ) -> str | list[str]:
-    """Clean a single text string for sentiment classification.
-
-    The steps run in a fixed, deliberate order. Negation marking happens
-    *before* punctuation and stop-word removal because it relies on both
-    negation words and punctuation as scope boundaries.
-
-    Args:
-        text:               raw input string.
-        lowercase:          fold to lower case.
-        handle_negation:    mark tokens inside a negation scope with ``neg_``.
-        remove_punctuation: drop tokens made up entirely of punctuation.
-        remove_stopwords:   drop stop words (sentiment-safe list).
-        lemmatize:          reduce words to their dictionary lemma.
-        stem:               reduce words to their Porter stem.
-        return_tokens:      return a token list instead of a joined string.
-
-    Returns:
-        A cleaned string, or a list of tokens if ``return_tokens`` is True.
-
-    Raises:
-        TypeError:  if ``text`` is not a string.
-        ValueError: if both ``lemmatize`` and ``stem`` are enabled.
-    """
+   
     if not isinstance(text, str):
         raise TypeError(f"expected str, got {type(text).__name__}")
     if lemmatize and stem:
@@ -165,15 +114,15 @@ def preprocess(
     # 2. Tokenize
     tokens = word_tokenize(text)
 
-    # 3. Negation marking (before steps that consume punctuation/negators)
+    # 3. Negation marking 
     if handle_negation:
         tokens = _mark_negation(tokens)
 
-    # 4. Drop pure-punctuation tokens
+    # 4. Remove punctuation-only tokens
     if remove_punctuation:
         tokens = [t for t in tokens if not all(ch in string.punctuation for ch in t)]
 
-    # 5. Remove stop words (compare against the un-prefixed core word)
+    # 5. Checks the original word before removing stop words
     if remove_stopwords:
         stop = _sentiment_stopwords()
         tokens = [
