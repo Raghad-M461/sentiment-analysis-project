@@ -1,1 +1,1 @@
-scikit-learn
+nltk>=3.9
