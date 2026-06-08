@@ -3,8 +3,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import cross_val_score, StratifiedKFold
 
-# 1) The dataset: areshort customer feedback sentences, each labelled
-#    as Positive or Negative.
+from preprocessing import preprocess   # <-- use our reusable pipeline
+
 
 texts = [
     'A fantastic quality overall.',
@@ -91,17 +91,17 @@ texts = [
 
 labels = ["Positive"] * 40 + ["Negative"] * 40
 
+#    This is the line that connects Task 6 to the model.
+texts_clean = [preprocess(t) for t in texts]
 
 model = make_pipeline(TfidfVectorizer(), LogisticRegression(max_iter=1000))
 
-
 splitter = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-scores = cross_val_score(model, texts, labels, cv=splitter)
+scores = cross_val_score(model, texts_clean, labels, cv=splitter)
 print("Cross-validation accuracy:", round(scores.mean() * 100, 1), "%")
 print()
 
-
-model.fit(texts, labels)
+model.fit(texts_clean, labels)
 
 new_texts = [
     "The support team was friendly and very helpful",
@@ -113,7 +113,9 @@ new_texts = [
 print("Sentiment Predictions:")
 print()
 for text in new_texts:
-    prediction = model.predict([text])[0]
+    # Preprocess each new sentence the SAME way before predicting,
+    # but print the original so the output stays readable.
+    prediction = model.predict([preprocess(text)])[0]
     print(text)
     print("Prediction:", prediction)
     print()
