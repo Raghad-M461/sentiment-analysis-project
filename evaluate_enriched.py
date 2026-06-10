@@ -1,6 +1,7 @@
 """Re-evaluate the BEST config (preprocess()+TF-IDF unigrams+LogReg) on the
 Option B enriched 3-class dataset. Same methodology: 5-fold stratified CV, seed 42."""
 import csv
+import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
@@ -29,6 +30,7 @@ print(confusion_matrix(y, pred, labels=classes))
 
 p, r, f, s = precision_recall_fscore_support(y, pred, labels=classes)
 macro = precision_recall_fscore_support(y, pred, average="macro")
+os.makedirs("evaluation", exist_ok=True)
 with open("evaluation/results_enriched.txt", "w") as fh:
     fh.write("Option B enriched re-evaluation (preprocess()+TF-IDF unigrams+LogReg, 5-fold CV, seed 42)\n\n")
     fh.write(f"Accuracy: {accuracy_score(y,pred)*100:.1f}% (CV mean {acc.mean()*100:.1f}% +/- {acc.std()*100:.1f})\n")
