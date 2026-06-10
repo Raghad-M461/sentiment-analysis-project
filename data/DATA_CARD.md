@@ -1,56 +1,50 @@
-# Data Card — Expanded 3-Class Sentiment Dataset
+# Data Card — Enriched 3-Class Sentiment Dataset (Option B)
 
-**Project:** sentiment-analysis-project
-**Branch:** `feature/dataset-expansion`
+**Project:** sentiment-analysis-project · **Branch:** `feature/dataset-expansion`
+**Approach:** **Option B — Dataset Enrichment** (manual, no external dataset)
 **Version:** 1.0 (3-class: Positive / Negative / Neutral)
-**Built by:** `scripts/make_dataset.py` (reproducible, `SEED=42`)
+**Built by:** `scripts/make_dataset.py` (deterministic)
 
 ---
 
 ## 1. Dataset Sources
 
-This dataset *extends* the original project dataset rather than replacing it. The
-original hand-authored sentences are kept unchanged and become a documented
-subset; real customer-review sentences are added on top, and a Neutral class is
-introduced using real data.
+This dataset **enriches** the original project dataset by hand. The original
+sentences are kept unchanged; new manually-authored sentences are added to
+introduce a Neutral class, increase linguistic diversity, and add challenging
+cases. **No external/public dataset is used** — this is pure Option B.
 
 ### Original dataset source
-- **Name:** Original manual customer-feedback set (Task 3 / preprocessing task)
-- **Origin:** Authored by hand for the project, generated from a small number of
-  sentence templates (e.g. *"A {adjective} {noun} overall."*, *"Honestly the
-  {noun} is {adjective}."*).
+- **Name:** Original manual customer-feedback set (prior tasks).
+- **Origin:** Authored for the project from a few sentence templates
+  (e.g. *"A {adjective} {noun} overall."*).
 - **Size:** 80 sentences (40 Positive, 40 Negative).
-- **Domain:** Short B2B software/service feedback (dashboard, onboarding,
-  delivery, support team, etc.).
-- **Role here:** Retained in full as a labelled subset, tagged `source =
-  original_manual` so it is fully traceable.
+- **Role:** kept in full, tagged `source = original_manual`, `category = template`.
 
-### Additional dataset source
-- **Name:** Customer Review Datasets (Hu & Liu, 2004), accessed via NLTK
-  `product_reviews_1` + `product_reviews_2`.
-- **Authors / origin:** Minqing Hu and Bing Liu, University of Illinois at
-  Chicago. Reviews were collected from Amazon.com and annotated at the sentence
-  level with opinion polarity and strength.
-- **Reference papers:** Hu & Liu, *"Mining and Summarizing Customer Reviews"*
-  (KDD-04); Hu & Liu, *"Mining Opinion Features in Customer Reviews"* (AAAI-04).
-- **Products covered:** digital cameras (Canon G3, Nikon Coolpix 4300, Canon
-  PowerShot SD500, Canon S100), mobile phones (Nokia 6610, Nokia 6600), MP3
-  players (Creative Zen, MicroMP3, iPod), DVD player (Apex AD2600), routers
-  (Linksys, Hitachi), antivirus (Norton), and a Diaper Champ.
-- **Annotation scheme used to derive labels:** each sentence's opinion tags were
-  summed. Net positive → **Positive**; net negative → **Negative**; no opinion
-  tag → **Neutral**. Sentences whose tags summed to exactly zero (conflicting
-  opinions) were discarded as ambiguous.
+### Additional samples (manual enrichment)
+- **Name:** Manual enrichment set (authored for this task).
+- **Origin:** Written and labelled by hand in `scripts/enriched_samples.py`.
+- **Size:** 130 sentences (30 Positive, 30 Negative, 70 Neutral).
+- **Purpose / what each adds (the four Option B goals):**
+  - **Neutral class:** 70 genuinely non-polar sentences (facts, questions,
+    instructions, contextual statements).
+  - **Linguistic diversity:** varied syntax, contractions, idioms, colloquial
+    phrasing, intensifiers, comparatives — breaking the original's rigid templates.
+  - **Challenging examples:** negation, sarcasm/irony, mixed sentiment, implicit
+    sentiment (no explicit polarity words), hyperbole.
+  - **Documentation:** every row carries a `category` tag (34 distinct
+    categories) recording *why* it was added.
 
 ### Licensing information
-- **Original subset:** authored for this project; no third-party rights.
-- **Hu & Liu data:** distributed by the authors for **research/academic use**
-  from `http://www.cs.uic.edu/~liub/FBS/FBS.html` and bundled in the NLTK data
-  distribution. It does **not** carry a formal open-source/SPDX licence (e.g. MIT
-  or CC); use is governed by the authors' research-use terms and should be
-  **attributed via the KDD-04 / AAAI-04 papers above**. This is acceptable for an
-  internship/learning project; it is **not** cleared for unrestricted commercial
-  redistribution.
+- All data is **authored for this project**; no third-party data and no external
+  licence obligations. Free to use and redistribute within the project.
+
+### Annotation guideline (for consistency)
+- Label = the writer's **overall** sentiment toward the product/service.
+- Sarcasm is labelled by **intended** meaning, not surface words.
+- Mixed sentiment is labelled by the overall verdict; balanced-with-no-verdict
+  would be Neutral.
+- Facts, questions, and instructions carry no polarity → **Neutral**.
 
 ---
 
@@ -58,31 +52,29 @@ introduced using real data.
 
 | Statistic | Value |
 |---|---|
-| Total samples | **1,500** |
+| Total samples | **210** |
 | Number of classes | **3** (Positive, Negative, Neutral) |
-| Samples per class | **500 / 500 / 500** (balanced) |
-| Original samples retained | 80 (40 Pos, 40 Neg) |
-| Real samples added | 1,420 (460 Pos, 460 Neg, 500 Neu) |
-| Avg. words per sentence | ~14 (real) vs ~5 (original) |
-| Reproducibility | fixed seed `42`; rebuild with `scripts/make_dataset.py` |
+| Samples per class | **70 / 70 / 70** (balanced) |
+| Original retained | 80 (40 Pos, 40 Neg) |
+| Manually added | 130 (30 Pos, 30 Neg, 70 Neu) |
+| Distinct enrichment categories | 34 |
+| Reproducibility | deterministic build; `scripts/make_dataset.py` |
 
 ### Samples per class (provenance breakdown)
 
-| Class | Original (manual) | Added (Hu & Liu real) | Total |
+| Class | Original (template) | Added (manual enrichment) | Total |
 |---|---|---|---|
-| Positive | 40 | 460 | 500 |
-| Negative | 40 | 460 | 500 |
-| Neutral | 0 | 500 | 500 |
-| **Total** | **80** | **1,420** | **1,500** |
+| Positive | 40 | 30 | 70 |
+| Negative | 40 | 30 | 70 |
+| Neutral | 0 | 70 | 70 |
+| **Total** | **80** | **130** | **210** |
 
 ---
 
 ## 3. Class Distribution
 
-The dataset is deliberately balanced at 500 samples per class to avoid
-class-imbalance effects in the evaluation. The chart below (`class_distribution.png`)
-shows each class split into the original manual portion and the added real
-portion.
+Balanced at 70 per class. The chart (`class_distribution.png`) shows each class
+split into the original templated portion and the added manual-enrichment portion.
 
 ![Class distribution](class_distribution.png)
 
@@ -90,67 +82,48 @@ portion.
 
 ## 4. Preprocessing
 
-Two preprocessing layers apply: **dataset-build cleaning** (applied once when the
-CSV is created) and the **model preprocessing pipeline** (applied at train time,
-unchanged from the previous task so the model stays a fixed variable).
+### Dataset-build (`make_dataset.py`)
+- Combine original 80 + 130 enriched; tag `source` and `category`.
+- Deterministic sort for reproducible ordering. No randomness, no filtering
+  (all authored samples are intentional).
 
-### Dataset-build cleaning (`make_dataset.py`)
-- Detokenised each annotated sentence back to readable text
-  (`TreebankWordDetokenizer`) and collapsed repeated whitespace.
-- **Length filter:** kept sentences of 4–40 words (drops headers, fragments, and
-  run-on lines).
-- **Non-text filter:** dropped lines with no alphabetic characters.
-- **Deduplication:** removed case-insensitive duplicate sentences.
-- **Ambiguity filter:** dropped sentences whose opinion tags summed to zero.
-- **Balancing:** randomly subsampled (seed 42) to 500 per class; the 80 originals
-  are placed first so they are always retained.
-
-### Model preprocessing pipeline (`preprocessing.py`, unchanged)
+### Model preprocessing (`preprocessing.py`, unchanged)
 - **Tokenization:** NLTK `word_tokenize`.
 - **Lowercasing:** applied.
-- **Negation handling:** negation marking — tokens inside a negation scope are
-  prefixed with `neg_` (`not good` → `not neg_good`); scope closes at punctuation
-  or contrast words (*but, however, though*).
-- **Stop-word handling:** a **sentiment-aware** stop list — NLTK's English list
-  **minus** polarity-bearing words (`not`, `never`, `but`, `very`, `too`, `so`,
-  …), which a generic list would wrongly delete.
-- **Normalisation:** lemmatization (WordNet), preserving the `neg_` prefix.
-- **Decision:** this exact configuration was the best performer in the previous
-  task (82.5% on the old data) and is held fixed here so any change in results is
-  attributable to the **data**, not the model.
+- **Negation handling:** negation marking (`not good` → `not neg_good`); scope
+  closes at punctuation / contrast words.
+- **Stop-word handling:** sentiment-aware list (keeps `not`, `never`, `but`,
+  `very`, …).
+- **Normalisation:** WordNet lemmatization, preserving the `neg_` prefix.
+- **Decision:** identical to the previous task's best configuration, held fixed
+  so result changes are attributable to the **data**, not the model.
 
 ---
 
 ## 5. Known Limitations
 
 ### Remaining biases
-- **Domain bias:** the added data is consumer-**product** reviews (electronics,
-  software). The original was B2B **service** feedback. Neither covers social
-  media, hospitality, finance, or non-English text.
-- **Source bias:** all real data comes from Amazon.com reviewers (~2003–2005),
-  so it reflects that era's products and writing style.
+- **Author bias:** all enrichment was written by one author, so vocabulary and
+  phrasing reflect a single style — a real annotation-consistency risk.
+- **Domain bias:** still product/service feedback only; no social media,
+  hospitality, finance, or non-English text.
 
 ### Coverage gaps
-- No domain-matched **service** data was added — the real data is products, not
-  the dashboards/onboarding the original described.
-- Sentences are short-to-medium; long, multi-sentiment reviews and sarcasm are
-  under-represented.
-- Single language (English) only.
+- The data is **authored, not real**, so it lacks the messiness, typos, and
+  unpredictability of genuine user text.
+- Challenging categories (sarcasm, mixed) are present but in small numbers.
+- English only; short sentences only.
 
 ### Label-quality concerns
-- Hu & Liu labels are human annotations and contain **noise** — some sentences
-  read as mislabelled (e.g. *"set up was easy and we enjoyed it for just over a
-  week"* tagged Negative). This noise is real and was kept deliberately, because
-  it reflects genuine annotation difficulty.
-- The **Neutral** class is defined as "no opinion tag." This conflates truly
-  neutral statements with factual/contextual sentences and is the fuzziest class.
-- Original 80 labels are clean but trivially separable (template-generated).
+- Sarcasm and mixed-sentiment labels are **judgement calls**; a different
+  annotator might disagree on some.
+- The **Neutral** class is lexically distinctive (questions, factual nouns), which
+  makes it *artificially easy* to classify (see Analysis) — authored neutral text
+  is cleaner than real neutral text would be.
 
 ### Dataset risks
-- **Licence:** Hu & Liu data is research-use only — do **not** ship commercially
-  without clearing rights.
-- **Mixed difficulty:** the 80 synthetic originals are far easier than the real
-  sentences, so they slightly inflate scores; they are a small fraction (5.3%) so
-  the effect is minor.
-- **Small by modern standards:** 1,500 samples is enough to expose difficulty but
-  too small to train a strong general sentiment model.
+- **Small:** 210 samples; 5-fold CV on this size is noisy (the original-only
+  subset swings ~5 points just from fold composition).
+- **Separability artifact:** because examples are authored, the model may key on
+  surface cues (e.g. "?" for Neutral) rather than true sentiment understanding.
+- The 80 templated originals remain trivially easy and slightly inflate scores.
