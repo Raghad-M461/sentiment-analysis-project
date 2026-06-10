@@ -1,0 +1,37 @@
+RE-EVALUATION — Option B Enriched Dataset
+
+Dataset size: 210
+
+5-Fold Cross-Validation Accuracy: 65.7%
+
+Fold Scores:
+[60, 69, 69, 60, 71]
+
+Per-Class Performance
+
+Positive:
+Precision: 0.656
+Recall: 0.571
+F1-Score: 0.611
+
+Negative:
+Precision: 0.644
+Recall: 0.543
+F1-Score: 0.589
+
+Neutral:
+Precision: 0.667
+Recall: 0.857
+F1-Score: 0.750
+
+Overall Metrics
+
+Accuracy: 0.657
+Macro F1-Score: 0.650
+
+Confusion Matrix
+(rows = true labels, columns = predicted labels)
+
+[40, 16, 14]
+[16, 38, 16]
+[5, 5, 60]
