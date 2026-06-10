@@ -68,13 +68,16 @@ def _mark_negation(tokens: list[str]) -> list[str]:
 
 
 def _normalize(token: str, *, lemmatize: bool, stem: bool) -> str:
-   , token
+    prefix, core = "", token
+
     if token.startswith(_NEG_PREFIX):
         prefix, core = _NEG_PREFIX, token[len(_NEG_PREFIX):]
+
     if lemmatize:
         core = _LEMMATIZER.lemmatize(core)
     elif stem:
         core = _STEMMER.stem(core)
+
     return prefix + core
 
 
