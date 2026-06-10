@@ -1,17 +1,6 @@
 """
-enriched_samples.py  —  Option B (Dataset Enrichment)
+ it works on Option B (Dataset Enrichment)
 
-Manually authored, hand-labelled sentences added to the original dataset.
-NO external dataset is imported. Each entry is (text, label, category) where
-`category` documents *why* the sample was added (the kind of difficulty or
-diversity it introduces), satisfying "document every addition clearly".
-
-Annotation guideline (kept consistent across all entries):
-  - Label = the writer's OVERALL sentiment toward the product/service.
-  - Sarcasm/irony is labelled by intended meaning, not surface words.
-  - Mixed sentiment is labelled by the overall verdict; if perfectly balanced
-    with no verdict, it is Neutral.
-  - Factual statements, questions, and instructions carry no polarity -> Neutral.
 """
 
 # (text, label, category)
