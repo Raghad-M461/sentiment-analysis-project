@@ -1,42 +1,56 @@
-"""Re-evaluate the BEST config (preprocess()+TF-IDF unigrams+LogReg) on the
-Option B enriched 3-class dataset. Same methodology: 5-fold stratified CV, seed 42."""
 import csv
 import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import StratifiedKFold, cross_val_score, cross_val_predict
-from sklearn.metrics import classification_report, confusion_matrix, precision_recall_fscore_support, accuracy_score
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support, confusion_matrix
 import preprocessing as pp
 
+# load the enriched dataset
 rows = list(csv.DictReader(open("data/sentiment_dataset_enriched.csv")))
 X = [pp.preprocess(r["text"]) for r in rows]
 y = [r["label"] for r in rows]
 classes = ["Positive", "Negative", "Neutral"]
+
+# same model and 5-fold setup as before
 model = make_pipeline(TfidfVectorizer(), LogisticRegression(max_iter=1000))
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
-acc = cross_val_score(model, X, y, cv=cv)
+scores = cross_val_score(model, X, y, cv=cv)
 pred = cross_val_predict(model, X, y, cv=cv)
-print("="*60)
-print("RE-EVALUATION — Option B enriched dataset (n=210)")
-print("Config: preprocess() + TF-IDF unigrams + LogisticRegression")
-print("="*60)
-print(f"5-fold CV accuracy: {acc.mean()*100:.1f}% (+/- {acc.std()*100:.1f})")
-print(f"Folds: {[f'{x*100:.0f}%' for x in acc]}\n")
-print(classification_report(y, pred, labels=classes, digits=3))
-print("Confusion matrix (rows=true, cols=pred)", classes)
-print(confusion_matrix(y, pred, labels=classes))
 
+acc = accuracy_score(y, pred)
 p, r, f, s = precision_recall_fscore_support(y, pred, labels=classes)
-macro = precision_recall_fscore_support(y, pred, average="macro")
+mp, mr, mf, _ = precision_recall_fscore_support(y, pred, average="macro")
+cm = confusion_matrix(y, pred, labels=classes).tolist()
+
+print("dataset size:", len(rows))
+print("cross-validation accuracy:", round(scores.mean() * 100, 1), "%")
+print("fold scores:", [round(v * 100) for v in scores])
+print()
+print("per class:")
+for i, c in enumerate(classes):
+    print(" ", c, "- precision", round(p[i], 3),
+          "recall", round(r[i], 3), "f1", round(f[i], 3))
+print()
+print("macro f1:", round(mf, 3))
+print("accuracy:", round(acc, 3))
+print()
+print("confusion matrix (rows = true, cols = pred):", classes)
+for row in cm:
+    print(" ", list(row))
+
 os.makedirs("evaluation", exist_ok=True)
 with open("evaluation/results_enriched.txt", "w") as fh:
-    fh.write("Option B enriched re-evaluation (preprocess()+TF-IDF unigrams+LogReg, 5-fold CV, seed 42)\n\n")
-    fh.write(f"Accuracy: {accuracy_score(y,pred)*100:.1f}% (CV mean {acc.mean()*100:.1f}% +/- {acc.std()*100:.1f})\n")
-    fh.write(f"Macro P/R/F1: {macro[0]*100:.1f}% / {macro[1]*100:.1f}% / {macro[2]*100:.1f}%\n\nPer-class:\n")
-    for i,c in enumerate(classes):
-        fh.write(f"  {c:9s} P={p[i]*100:5.1f}%  R={r[i]*100:5.1f}%  F1={f[i]*100:5.1f}%  (n={s[i]})\n")
-    fh.write("\nConfusion matrix (rows=true, cols=pred) "+str(classes)+":\n")
-    fh.write(str(confusion_matrix(y, pred, labels=classes)))
-print("\nSaved -> evaluation/results_enriched.txt")
+    fh.write("Enriched dataset evaluation\n")
+    fh.write("dataset size: " + str(len(rows)) + "\n")
+    fh.write("accuracy: " + str(round(acc * 100, 1)) + "%\n")
+    fh.write("macro f1: " + str(round(mf, 3)) + "\n\n")
+    for i, c in enumerate(classes):
+        fh.write(c + " precision " + str(round(p[i], 3)) +
+                 " recall " + str(round(r[i], 3)) +
+                 " f1 " + str(round(f[i], 3)) + "\n")
+    fh.write("\nconfusion matrix " + str(classes) + "\n")
+    for row in cm:
+        fh.write(str(list(row)) + "\n")
