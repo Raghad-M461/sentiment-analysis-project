@@ -1,10 +1,3 @@
-"""
-Reusable preprocessing function created for Task 6.
-
-This function applies common NLP preprocessing techniques such as lowercasing, tokenization, stop-word removal, stemming, lemmatization, punctuation removal, and negation handling.
-
-The settings can be changed easily so I can test how different preprocessing methods affect sentiment analysis results.
-"""
 
 from __future__ import annotations
 
@@ -16,9 +9,6 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
-
-# Downloads the NLTK resources needed for preprocessing.
-# Resources that already exist are not downloaded again.
 def _ensure_nltk_data() -> None:
     resources = [
         ("tokenizers/punkt", "punkt"),
@@ -41,8 +31,7 @@ _LEMMATIZER = WordNetLemmatizer()
 
 _NEG_PREFIX = "neg_"
 
-# Negation words such as not, no, never, and n't.
-# NLTK separates contractions like "don't" into "do" and "n't".
+
 NEGATION_WORDS = {
     "not", "no", "never", "none", "nobody", "nothing", "neither",
     "nor", "nowhere", "cannot", "cant", "couldnt", "wouldnt", "shouldnt",
@@ -50,11 +39,8 @@ NEGATION_WORDS = {
     "hasnt", "havent", "hadnt", "aint", "n't",
 }
 
-# A negation scope ends at clause boundaries / contrast words / punctuation.
 _NEGATION_STOPPERS = {".", ",", ";", ":", "!", "?", "but", "however", "though"}
 
-# Words to keep even if a generic stop list removes them, because they carry
-# or modify sentiment polarity (negators, intensifiers, contrast markers).
 SENTIMENT_KEEP = NEGATION_WORDS | {
     "very", "too", "so", "more", "most", "only", "just",
     "but", "however", "against", "off", "down", "up",
@@ -63,15 +49,11 @@ SENTIMENT_KEEP = NEGATION_WORDS | {
 
 @lru_cache(maxsize=1)
 def _sentiment_stopwords() -> frozenset[str]:
-    """English stop words minus the tokens that carry sentiment signal."""
     return frozenset(set(stopwords.words("english")) - SENTIMENT_KEEP)
 
 
 def _mark_negation(tokens: list[str]) -> list[str]:
-    """Prefix every token inside a negation scope with 'neg_'.
-
-    A scope opens at a negation cue and closes at the next stopper token.
-    """
+    
     out, negating = [], False
     for tok in tokens:
         if tok in _NEGATION_STOPPERS:
@@ -86,8 +68,7 @@ def _mark_negation(tokens: list[str]) -> list[str]:
 
 
 def _normalize(token: str, *, lemmatize: bool, stem: bool) -> str:
-    """Lemmatize or stem a token while preserving any 'neg_' prefix."""
-    prefix, core = "", token
+   , token
     if token.startswith(_NEG_PREFIX):
         prefix, core = _NEG_PREFIX, token[len(_NEG_PREFIX):]
     if lemmatize:
@@ -108,7 +89,6 @@ def preprocess(
     stem: bool = False,
     return_tokens: bool = False,
 ) -> str | list[str]:
-    """Clean a single text string for sentiment classification."""
     if not isinstance(text, str):
         raise TypeError(f"expected str, got {type(text).__name__}")
     if lemmatize and stem:
