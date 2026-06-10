@@ -13,14 +13,14 @@ def run(texts, labels, name):
     print(f"{name:52s} {s.mean()*100:5.1f}%   (chance {100/len(set(labels)):.0f}%)")
 
 rows = list(csv.DictReader(open("data/sentiment_dataset_enriched.csv")))
-# original-only binary (the old setup, recomputed)
+
 o = [r for r in rows if r["source"] == "original_manual"]
 run([r["text"] for r in o], [r["label"] for r in o],
     "Original 80 only, binary (old setup)")
-# enriched binary (pos/neg incl. challenging) -> effect of harder examples
+
 b = [r for r in rows if r["label"] in ("Positive", "Negative")]
 run([r["text"] for r in b], [r["label"] for r in b],
     "Enriched, binary (Pos/Neg incl. challenging)")
-# full enriched 3-class
+
 run([r["text"] for r in rows], [r["label"] for r in rows],
     "Enriched, 3-class (adds Neutral)")
