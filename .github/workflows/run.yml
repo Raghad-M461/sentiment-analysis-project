@@ -15,12 +15,13 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-      - name: Run evaluation metrics
-        run: |
-          PYTHONPATH=scripts python scripts/evaluate_metrics.py
-      - name: Run negation tests
-        run: |
-          PYTHONPATH=scripts python scripts/negation_test.py
-      - name: List generated files
+          python -m nltk.downloader punkt punkt_tab wordnet omw-1.4 stopwords
+      - name: Show repo layout
         run: |
           ls -R
+      - name: Run evaluation metrics
+        run: |
+          python evaluate_metrics.py
+      - name: Run negation tests
+        run: |
+          python negation_test.py
