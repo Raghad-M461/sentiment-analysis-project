@@ -1,4 +1,4 @@
-"""Task 8 - full evaluation metrics for the best model on the enriched dataset."""
+"""Task 8 """
 
 import csv
 import os
