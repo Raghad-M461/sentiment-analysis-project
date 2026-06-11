@@ -1,4 +1,3 @@
-"""Task 8 Part 3 - negation failure investigation."""
 
 import csv
 
