@@ -1,15 +1,26 @@
 """Task 8 Part 3 - negation failure investigation."""
+
 import csv
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
+
 import preprocessing as pp
 
-rows = list(csv.DictReader(open("sentiment_dataset_enriched.csv")))
+
+DATASET_PATH = "evaluation/sentiment_dataset_enriched.csv"
+
+rows = list(csv.DictReader(open(DATASET_PATH, encoding="utf-8")))
+
 X = [pp.preprocess(r["text"]) for r in rows]
 y = [r["label"] for r in rows]
 
-model = make_pipeline(TfidfVectorizer(), LogisticRegression(max_iter=1000))
+model = make_pipeline(
+    TfidfVectorizer(),
+    LogisticRegression(max_iter=1000)
+)
+
 model.fit(X, y)
 
 tests = [
@@ -18,10 +29,15 @@ tests = [
     ("Not happy with the support", "Negative"),
     ("Not the worst experience", "Positive"),
 ]
-print(f"{'sentence':32s} {'expected':9s} {'predicted':9s} {'preprocessed'}")
-print("-"*90)
+
+print(f"{'Sentence':35s} {'Expected':10s} {'Predicted':10s} Result")
+print("-" * 75)
+
 for text, expected in tests:
-    proc = pp.preprocess(text)
-    p = model.predict([proc])[0]
-    mark = "OK" if p == expected else "WRONG"
-    print(f"{text:32s} {expected:9s} {p:9s} [{mark}]  {proc!r}")
+    processed_text = pp.preprocess(text)
+    prediction = model.predict([processed_text])[0]
+    result = "OK" if prediction == expected else "WRONG"
+
+    print(f"{text:35s} {expected:10s} {prediction:10s} {result}")
+    print("Preprocessed:", processed_text)
+    print()
