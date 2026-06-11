@@ -1,4 +1,4 @@
-name: Run sentiment analysis
+name: Evaluation Metrics
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out the code
         uses: actions/checkout@v4
@@ -17,7 +18,17 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
 
-      - name: Run sentiment analysis
-        run: python sentiment_analysis.py
+      - name: Run evaluation metrics
+        run: |
+          python evaluate_metrics.py
+
+      - name: Run negation tests
+        run: |
+          python negation_test.py
+
+      - name: List generated files
+        run: |
+          ls -R
