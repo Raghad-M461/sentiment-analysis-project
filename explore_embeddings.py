@@ -37,7 +37,7 @@ import preprocessing as pp
 
 # ── defaults ──────────────────────────────────────────────────────────────────
 DEFAULT_GLOVE = os.path.join(os.path.dirname(__file__), "..", "glove_data", "glove.6B.50d.txt")
-DATASET_PATH  = os.path.join(os.path.dirname(__file__), "..", "evaluation", "sentiment_dataset_enriched.csv")
+DATASET_PATH = os.path.join(os.path.dirname(__file__), "evaluation", "sentiment_dataset_enriched.csv")
 DIM = 50   # must match the file you load
 
 # ── words we care about for sentiment ─────────────────────────────────────────
