@@ -1,9 +1,7 @@
-name: Run sentiment analysis
-
+name: Word Embeddings Exploration
 on:
   push:
   workflow_dispatch:
-
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -19,5 +17,18 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run sentiment analysis
+      - name: Download NLTK data
+        run: python -m nltk.downloader punkt punkt_tab wordnet omw-1.4 stopwords
+
+      - name: Download GloVe vectors
+        run: |
+          wget -q https://nlp.stanford.edu/data/glove.6B.zip
+          unzip -q glove.6B.zip glove.6B.50d.txt
+          mkdir -p glove_data
+          mv glove.6B.50d.txt glove_data/
+
+      - name: Run original sentiment analysis (baseline)
         run: python sentiment_analysis.py
+
+      - name: Run embeddings exploration
+        run: python embeddings/explore_embeddings.py --glove glove_data/glove.6B.50d.txt
