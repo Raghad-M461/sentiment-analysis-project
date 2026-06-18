@@ -1,0 +1,211 @@
+text,label,source,category
+"Oh fantastic, another update that breaks everything.",Negative,enriched_manual,sarcasm
+"Looks nice, shame it stops working after a week.",Negative,enriched_manual,mixed_lean_negative
+"Not what I expected, and not in a good way.",Negative,enriched_manual,negation
+Spent more time on hold than actually using it.,Negative,enriched_manual,implicit
+The battery dies faster than my motivation on Mondays.,Negative,enriched_manual,colloquial
+Worse than the cheap one it replaced.,Negative,enriched_manual,comparative
+"Sure, it works, if you enjoy waiting ten minutes to load.",Negative,enriched_manual,sarcasm
+"Great in theory, useless in practice.",Negative,enriched_manual,contrast
+Three emails to support and still no reply.,Negative,enriched_manual,implicit
+It overheats if you so much as look at it.,Negative,enriched_manual,hyperbole
+Save your money and buy literally anything else.,Negative,enriched_manual,advice
+The instructions might as well have been in another language.,Negative,enriched_manual,implicit
+Stopped charging on day two. Day. Two.,Negative,enriched_manual,emphasis
+"Feels cheap, sounds cheap, is cheap.",Negative,enriched_manual,repetition
+"I wanted to love it, I really did.",Negative,enriched_manual,implicit_disappointment
+The app logs me out every five minutes.,Negative,enriched_manual,descriptive
+"Paid for express shipping, arrived two weeks late.",Negative,enriched_manual,contrast
+Half the features are locked behind a paywall.,Negative,enriched_manual,descriptive
+Returned it the same day it arrived.,Negative,enriched_manual,implicit
+Customer service hung up on me twice.,Negative,enriched_manual,descriptive
+Louder than a jet engine and just as relaxing.,Negative,enriched_manual,sarcasm_comparative
+"It's fine, if your standards are on the floor.",Negative,enriched_manual,sarcasm
+Buttons stopped responding within a month.,Negative,enriched_manual,descriptive
+The 'waterproof' case leaked immediately.,Negative,enriched_manual,irony_quotes
+Can't believe they charge money for this.,Negative,enriched_manual,implicit
+"Crashes constantly, support blames my phone.",Negative,enriched_manual,descriptive
+"Looks great in photos, falls apart in person.",Negative,enriched_manual,mixed_lean_negative
+The free trial was the best part.,Negative,enriched_manual,sarcasm_implicit
+"Slower with every update, not faster.",Negative,enriched_manual,negation_comparative
+Avoid unless you enjoy frustration.,Negative,enriched_manual,advice
+A broken onboarding overall.,Negative,original_manual,template
+A confusing platform overall.,Negative,original_manual,template
+A disappointing product overall.,Negative,original_manual,template
+A frustrating dashboard overall.,Negative,original_manual,template
+A frustrating delivery overall.,Negative,original_manual,template
+A frustrating website overall.,Negative,original_manual,template
+A poor quality overall.,Negative,original_manual,template
+A poor website overall.,Negative,original_manual,template
+A rude tool overall.,Negative,original_manual,template
+A slow delivery overall.,Negative,original_manual,template
+A slow experience overall.,Negative,original_manual,template
+An unreliable app overall.,Negative,original_manual,template
+Honestly the customer service is rude.,Negative,original_manual,template
+Honestly the dashboard is unreliable.,Negative,original_manual,template
+Honestly the software is frustrating.,Negative,original_manual,template
+Honestly the tool is unreliable.,Negative,original_manual,template
+I found the customer service really frustrating.,Negative,original_manual,template
+I found the dashboard really rude.,Negative,original_manual,template
+I found the delivery really terrible.,Negative,original_manual,template
+I found the onboarding really horrible.,Negative,original_manual,template
+I found the price really broken.,Negative,original_manual,template
+I found the price really horrible.,Negative,original_manual,template
+I found the update really broken.,Negative,original_manual,template
+Such a disappointing software.,Negative,original_manual,template
+Such a frustrating dashboard.,Negative,original_manual,template
+Such a rude dashboard.,Negative,original_manual,template
+Such a rude software.,Negative,original_manual,template
+Such a slow quality.,Negative,original_manual,template
+Such a slow website.,Negative,original_manual,template
+Such a terrible product.,Negative,original_manual,template
+Such an unreliable tool.,Negative,original_manual,template
+The interface felt disappointing to me.,Negative,original_manual,template
+The platform was frustrating.,Negative,original_manual,template
+The service felt useless to me.,Negative,original_manual,template
+The support team felt terrible to me.,Negative,original_manual,template
+The tool felt frustrating to me.,Negative,original_manual,template
+The website was horrible.,Negative,original_manual,template
+Their customer service was broken.,Negative,original_manual,template
+Their experience was poor.,Negative,original_manual,template
+Their product was awful.,Negative,original_manual,template
+"The package includes a charger, a cable, and a manual.",Neutral,enriched_manual,factual
+"It comes in three colors: black, white, and grey.",Neutral,enriched_manual,factual
+The device weighs about two hundred grams.,Neutral,enriched_manual,factual
+Shipping usually takes three to five business days.,Neutral,enriched_manual,factual
+The app is available on both Android and iOS.,Neutral,enriched_manual,factual
+It runs on two AA batteries.,Neutral,enriched_manual,factual
+The warranty covers one year from purchase.,Neutral,enriched_manual,factual
+You can change the language in the settings menu.,Neutral,enriched_manual,instruction
+The screen measures six inches diagonally.,Neutral,enriched_manual,factual
+The subscription renews automatically each month.,Neutral,enriched_manual,factual
+There are two USB ports on the back.,Neutral,enriched_manual,factual
+The manual is also available as a PDF online.,Neutral,enriched_manual,factual
+It supports files up to two gigabytes.,Neutral,enriched_manual,factual
+The store opens at nine and closes at six.,Neutral,enriched_manual,factual
+The update is scheduled for next Tuesday.,Neutral,enriched_manual,factual
+Each box contains twelve units.,Neutral,enriched_manual,factual
+The software requires at least eight gigabytes of RAM.,Neutral,enriched_manual,factual
+It connects over Bluetooth or Wi-Fi.,Neutral,enriched_manual,factual
+The return window is thirty days.,Neutral,enriched_manual,factual
+The model number is printed on the base.,Neutral,enriched_manual,factual
+Does this come with a wall adapter?,Neutral,enriched_manual,question
+Is the app free to download?,Neutral,enriched_manual,question
+How long does the battery take to charge?,Neutral,enriched_manual,question
+Can I use this outside the country?,Neutral,enriched_manual,question
+What size should I order for a teenager?,Neutral,enriched_manual,question
+Is there a version for Mac?,Neutral,enriched_manual,question
+Do you ship to rural addresses?,Neutral,enriched_manual,question
+When will the next model be released?,Neutral,enriched_manual,question
+Are spare parts sold separately?,Neutral,enriched_manual,question
+Which port is for the headphones?,Neutral,enriched_manual,question
+"If it freezes, hold the power button for ten seconds.",Neutral,enriched_manual,instruction
+"To reset it, press both buttons at once.",Neutral,enriched_manual,instruction
+You'll need an adapter for European outlets.,Neutral,enriched_manual,instruction
+Install the app before connecting the device.,Neutral,enriched_manual,instruction
+Charge it fully before the first use.,Neutral,enriched_manual,instruction
+Update the firmware to enable the new mode.,Neutral,enriched_manual,instruction
+Keep the receipt in case you need to return it.,Neutral,enriched_manual,instruction
+Pair it with the app to see usage stats.,Neutral,enriched_manual,instruction
+Restart the router if the connection drops.,Neutral,enriched_manual,instruction
+Register online to activate the warranty.,Neutral,enriched_manual,instruction
+It's about the same size as a deck of cards.,Neutral,enriched_manual,comparative_neutral
+The newer version looks identical to the old one.,Neutral,enriched_manual,comparative_neutral
+It's roughly the price of a typical mid-range phone.,Neutral,enriched_manual,comparative_neutral
+The interface is similar to the previous release.,Neutral,enriched_manual,comparative_neutral
+It uses the same charger as the last model.,Neutral,enriched_manual,comparative_neutral
+"Compared spec for spec, the two are nearly identical.",Neutral,enriched_manual,comparative_neutral
+The color in person matches the website.,Neutral,enriched_manual,factual
+It's neither the cheapest nor the most expensive option.,Neutral,enriched_manual,comparative_neutral
+I bought this for my office last March.,Neutral,enriched_manual,context
+We use it mainly for video calls.,Neutral,enriched_manual,context
+It replaced an older unit we'd had for years.,Neutral,enriched_manual,context
+"I ordered two, one for home and one for work.",Neutral,enriched_manual,context
+The company is based in Germany.,Neutral,enriched_manual,factual
+This is the second one I've owned.,Neutral,enriched_manual,context
+It arrived in standard cardboard packaging.,Neutral,enriched_manual,context
+I've been using it for about a week now.,Neutral,enriched_manual,context
+The seller included a handwritten thank-you note.,Neutral,enriched_manual,context
+It was a gift from my brother.,Neutral,enriched_manual,context
+The firmware version is listed in the about page.,Neutral,enriched_manual,factual
+I set it up over the weekend.,Neutral,enriched_manual,context
+The buttons are arranged along the right edge.,Neutral,enriched_manual,descriptive
+A small light blinks while it's charging.,Neutral,enriched_manual,descriptive
+The fan turns on automatically under load.,Neutral,enriched_manual,descriptive
+The cable is about one meter long.,Neutral,enriched_manual,factual
+There's a headphone jack on the bottom.,Neutral,enriched_manual,descriptive
+It ships from a warehouse in the next state.,Neutral,enriched_manual,factual
+The default password is on the sticker underneath.,Neutral,enriched_manual,instruction
+The box is sealed with tamper-evident tape.,Neutral,enriched_manual,descriptive
+It supports up to five user profiles.,Neutral,enriched_manual,factual
+The clock resets if you unplug it.,Neutral,enriched_manual,descriptive
+"Honestly didn't expect much, but this completely won me over.",Positive,enriched_manual,negation_contrast
+"It's not perfect, yet I'd buy it again in a heartbeat.",Positive,enriched_manual,mixed_lean_positive
+The battery lasts forever and charging is lightning fast.,Positive,enriched_manual,intensifier
+Way better than the model I had before.,Positive,enriched_manual,comparative
+Setup took two minutes and everything just worked.,Positive,enriched_manual,implicit
+"Support actually called me back within the hour, rare these days.",Positive,enriched_manual,implicit
+"Five stars, no complaints whatsoever.",Positive,enriched_manual,negation_phrasing
+"I was skeptical, but the results speak for themselves.",Positive,enriched_manual,contrast
+"Smooth, quiet, and barely uses any power.",Positive,enriched_manual,descriptive
+My whole team switched to it after seeing mine.,Positive,enriched_manual,implicit_social_proof
+"Can't fault it, does exactly what it promises.",Positive,enriched_manual,negation_to_positive
+The update fixed every issue I had.,Positive,enriched_manual,temporal
+"Cheap price, premium feel.",Positive,enriched_manual,contrast
+Held up perfectly after a year of daily use.,Positive,enriched_manual,durability
+Even my technophobe dad figured it out instantly.,Positive,enriched_manual,implicit
+Worth every penny and then some.,Positive,enriched_manual,idiomatic
+"Delivery was a day early, which never happens.",Positive,enriched_manual,negation_context
+Crashes? Not once since I installed it.,Positive,enriched_manual,negation_to_positive
+The screen is gorgeous in direct sunlight.,Positive,enriched_manual,descriptive
+Customer service turned my bad week around.,Positive,enriched_manual,contrast
+Lightweight enough to carry all day without noticing.,Positive,enriched_manual,descriptive
+It paid for itself within a month.,Positive,enriched_manual,implicit
+Quieter than a whisper and twice as fast.,Positive,enriched_manual,comparative_intensifier
+I've recommended it to literally everyone.,Positive,enriched_manual,implicit
+"No regrets, best purchase this year.",Positive,enriched_manual,negation_phrasing
+The app finally feels polished after the redesign.,Positive,enriched_manual,temporal
+"Tastes exactly like the real thing, maybe better.",Positive,enriched_manual,comparative
+"Returns were painless, refund hit my account same day.",Positive,enriched_manual,positive_on_negative_topic
+"Sturdy build, you can tell they didn't cut corners.",Positive,enriched_manual,implicit
+Does the job beautifully and stays out of the way.,Positive,enriched_manual,descriptive
+A fantastic quality overall.,Positive,original_manual,template
+A friendly update overall.,Positive,original_manual,template
+A great website overall.,Positive,original_manual,template
+A helpful delivery overall.,Positive,original_manual,template
+A perfect service overall.,Positive,original_manual,template
+A reliable service overall.,Positive,original_manual,template
+A wonderful onboarding overall.,Positive,original_manual,template
+An impressive product overall.,Positive,original_manual,template
+Honestly the dashboard is great.,Positive,original_manual,template
+Honestly the service is impressive.,Positive,original_manual,template
+Honestly the setup process is perfect.,Positive,original_manual,template
+I found the delivery really impressive.,Positive,original_manual,template
+I found the experience really outstanding.,Positive,original_manual,template
+I found the platform really great.,Positive,original_manual,template
+I found the service really wonderful.,Positive,original_manual,template
+I found the tool really impressive.,Positive,original_manual,template
+I found the update really reliable.,Positive,original_manual,template
+Such an impressive platform.,Positive,original_manual,template
+Such an impressive support team.,Positive,original_manual,template
+Such a reliable service.,Positive,original_manual,template
+The dashboard felt reliable to me.,Positive,original_manual,template
+The experience felt helpful to me.,Positive,original_manual,template
+The experience was friendly.,Positive,original_manual,template
+The interface felt great to me.,Positive,original_manual,template
+The interface was perfect.,Positive,original_manual,template
+The price felt perfect to me.,Positive,original_manual,template
+The price was excellent.,Positive,original_manual,template
+The quality felt reliable to me.,Positive,original_manual,template
+The service felt outstanding to me.,Positive,original_manual,template
+The service was friendly.,Positive,original_manual,template
+The software was excellent.,Positive,original_manual,template
+The update felt wonderful to me.,Positive,original_manual,template
+Their dashboard was reliable.,Positive,original_manual,template
+Their delivery was smooth.,Positive,original_manual,template
+Their experience was outstanding.,Positive,original_manual,template
+Their onboarding was friendly.,Positive,original_manual,template
+Their team was smooth.,Positive,original_manual,template
+Their tool was impressive.,Positive,original_manual,template
+Their update was helpful.,Positive,original_manual,template
+Their update was reliable.,Positive,original_manual,template
