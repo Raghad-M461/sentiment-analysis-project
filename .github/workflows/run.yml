@@ -31,4 +31,4 @@ jobs:
         run: python sentiment_analysis.py
 
       - name: Run embeddings exploration
-        run: python embeddings/explore_embeddings.py --glove glove_data/glove.6B.50d.txt
+        run: python explore_embeddings.py --glove glove_data/glove.6B.50d.txt
