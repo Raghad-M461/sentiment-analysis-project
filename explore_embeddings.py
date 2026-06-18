@@ -1,22 +1,11 @@
 """
-explore_embeddings.py  —  Week 3 task: pretrained GloVe exploration
-Branch: feature/word-embeddings
 
 What this script does:
-  1. Loads GloVe 50d vectors (400k-word vocab trained on Wikipedia + Gigaword).
+  1. Loads GloVe 50d vectors .
   2. For 10 sentiment-relevant words, prints the top-5 most similar words.
-  3. Runs a few word-analogy tests (a is to b as c is to ?).
-  4. (Optional) Builds sentence vectors by averaging word embeddings, then
-     runs 5-fold cross-validation against the TF-IDF baseline.
+  3. Runs a few word-analogy tests
+  4.  Builds sentence vectors by averaging word embeddings, then runs 5-fold cross-validation against the TF-IDF baseline.
 
-Usage:
-  python embeddings/explore_embeddings.py --glove path/to/glove.6B.50d.txt
-
-The GloVe file is NOT committed to git because it is ~164 MB.
-Download it from: https://nlp.stanford.edu/projects/glove/
-  → glove.6B.zip  →  extract glove.6B.50d.txt
-Or use the gensim downloader:
-  python -m gensim.downloader --download glove-wiki-gigaword-50
 """
 
 import argparse
@@ -123,7 +112,7 @@ def print_cosine_checks(kv: KeyedVectors) -> None:
 
 
 # ==============================================================================
-# 5.  SENTENCE-VECTOR BASELINE COMPARISON  (optional)
+# 5.  SENTENCE-VECTOR BASELINE COMPARISON  
 # ==============================================================================
 def run_baseline_comparison(kv: KeyedVectors) -> None:
     print("=" * 65)
@@ -141,11 +130,7 @@ def run_baseline_comparison(kv: KeyedVectors) -> None:
     tfidf_model = make_pipeline(TfidfVectorizer(), LogisticRegression(max_iter=1000))
     tfidf_scores = cross_val_score(tfidf_model, X_tfidf, y, cv=cv)
 
-    # ── Embedding average ────────────────────────────────────────────────────
-    # We intentionally turn OFF negation marking here.
-    # Negation-marked tokens like "neg_good" are NOT in the GloVe vocab, so
-    # they would be silently dropped — losing information without warning.
-    # We'll discuss this limitation in the markdown note.
+   
     def sent_vec(text: str) -> np.ndarray:
         tokens = pp.preprocess(text, handle_negation=False, return_tokens=True)
         vecs = [kv[tok] for tok in tokens if tok in kv]
@@ -154,7 +139,6 @@ def run_baseline_comparison(kv: KeyedVectors) -> None:
     X_emb = np.array([sent_vec(t) for t in texts_raw])
     emb_scores = cross_val_score(LogisticRegression(max_iter=1000), X_emb, y, cv=cv)
 
-    # ── OOV rate ─────────────────────────────────────────────────────────────
     oov, total = 0, 0
     for t in texts_raw:
         toks = pp.preprocess(t, handle_negation=False, return_tokens=True)
