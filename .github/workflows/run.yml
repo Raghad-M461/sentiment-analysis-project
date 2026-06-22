@@ -1,4 +1,4 @@
-name: Run sentiment analysis
+name: Contextual Embeddings Exploration
 on:
   push:
   workflow_dispatch:
@@ -8,11 +8,30 @@ jobs:
     steps:
       - name: Check out the code
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: Run sentiment analysis
-        run: python sentiment_analysis.py is this what needs modication ?
+
+      - name: Download NLTK data
+        run: python -m nltk.downloader punkt punkt_tab wordnet omw-1.4 stopwords
+
+      - name: Download GloVe vectors
+        run: |
+          wget -q https://nlp.stanford.edu/data/glove.6B.zip
+          unzip -q glove.6B.zip glove.6B.50d.txt
+          mkdir -p glove_data
+          mv glove.6B.50d.txt glove_data/
+
+      - name: Run original sentiment analysis (baseline)
+        run: python sentiment_analysis.py
+
+      - name: Run embeddings exploration
+        run: python explore_embeddings.py --glove glove_data/glove.6B.50d.txt
+
+      - name: Run contextual similarity script
+        run: python embeddings/contextual_similarity.py
