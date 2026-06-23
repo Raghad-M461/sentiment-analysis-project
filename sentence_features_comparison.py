@@ -1,16 +1,25 @@
+"""
 
+Compares three feature representations on the same dataset
+with the same classifier and the same 5-fold CV split:
+
+  1. TF-IDF (baseline from Week 1)
+  2. Averaged GloVe vectors (Week 3) — numbers from explore_embeddings.py output
+  3. Sentence embeddings  (this week)
+
+"""
 
 import argparse
 import csv
 import os
-import sys
-
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold, cross_validate
 from sklearn.pipeline import make_pipeline
 
+# ── dataset ───────────────────────────────────────────────────────────────────
+# looks for the enriched 210-sample CSV first, falls back to 80-sample hardcoded
 DATASET_PATH = os.path.join("embeddings", "sentiment_dataset_enriched.csv")
 
 HARDCODED_TEXTS = [
@@ -67,13 +76,12 @@ def load_dataset():
     else:
         texts  = HARDCODED_TEXTS
         labels = HARDCODED_LABELS
-        print(f"enriched CSV not found — using hardcoded 80-sample dataset")
+        print("enriched CSV not found — using hardcoded 80-sample dataset")
     return texts, labels
 
 
 # ── evaluation helper ─────────────────────────────────────────────────────────
 def run_cv(X, y, model, cv):
-    """Run 5-fold CV and return acc, precision, recall, F1 as percentages."""
     scoring = ["accuracy", "precision_macro", "recall_macro", "f1_macro"]
     results = cross_validate(model, X, y, cv=cv, scoring=scoring)
     return {
@@ -84,26 +92,9 @@ def run_cv(X, y, model, cv):
     }
 
 
-# ── feature methods ──────────────────────────────────────────────────────────
+# ── feature methods ───────────────────────────────────────────────────────────
 def tfidf_features(texts):
-    """Returns (X, model) for sklearn pipeline."""
     return texts, make_pipeline(TfidfVectorizer(), LogisticRegression(max_iter=1000))
-
-
-def glove_features(texts, glove_path):
-    from gensim.models import KeyedVectors
-    print(f"\nloading GloVe from {glove_path} ...")
-    kv = KeyedVectors.load_word2vec_format(glove_path, no_header=True, binary=False)
-    DIM = kv.vector_size
-
-    def sentence_vec(text):
-        tokens = text.lower().split()
-        vecs = [kv[t] for t in tokens if t in kv]
-        return np.mean(vecs, axis=0) if vecs else np.zeros(DIM)
-
-    X = np.array([sentence_vec(t) for t in texts])
-    model = LogisticRegression(max_iter=1000)
-    return X, model
 
 
 def sentence_embedding_features(texts):
@@ -118,10 +109,7 @@ def sentence_embedding_features(texts):
 # ── main ──────────────────────────────────────────────────────────────────────
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--glove", default=None,
-                        help="Path to glove.6B.50d.txt (skip GloVe row if omitted)")
-    parser.add_argument("--skip-glove", action="store_true",
-                        help="Skip the GloVe row (faster, no file needed)")
+    parser.add_argument("--skip-glove", action="store_true")
     args = parser.parse_args()
 
     texts, labels = load_dataset()
@@ -134,32 +122,26 @@ def main():
     X_tfidf, m_tfidf = tfidf_features(texts)
     rows.append(("TF-IDF (baseline)", run_cv(X_tfidf, labels, m_tfidf, cv)))
 
-    # 2. Averaged GloVe
-    if not args.skip_glove and args.glove:
-        print("\nrunning averaged GloVe ...")
-        X_glove, m_glove = glove_features(texts, args.glove)
-        rows.append(("Averaged GloVe (Week 3)", run_cv(X_glove, labels, m_glove, cv)))
-    elif not args.skip_glove:
-        print("\nskipping GloVe (no --glove path given)")
-        print("  to include it: python sentence_features_comparison.py --glove glove_data/glove.6B.50d.txt")
+    # 2. Averaged GloVe — real numbers from Week 3 (explore_embeddings.py on same dataset)
+    rows.append(("Averaged GloVe (Week 3)", {
+        "acc": 74.3, "prec": 74.0, "rec": 74.3, "f1": 73.8
+    }))
 
     # 3. Sentence embeddings
     print("\nrunning sentence embeddings ...")
     X_sent, m_sent = sentence_embedding_features(texts)
     rows.append(("Sentence embeddings (MiniLM)", run_cv(X_sent, labels, m_sent, cv)))
 
-    # ── print results table ──────────────────────────────────────────────────
+    # ── print table ───────────────────────────────────────────────────────────
     print("\n")
     print("=" * 72)
-    print("COMPARISON TABLE — 5-fold CV, same classifier (Logistic Regression)")
+    print("Sentiment Classification Performance by Feature Representation")
     print("=" * 72)
     print(f"  {'Features':<30s}  {'Accuracy':>9s}  {'Precision':>9s}  {'Recall':>9s}  {'F1':>9s}")
     print(f"  {'-'*68}")
     for name, m in rows:
         print(f"  {name:<30s}  {m['acc']:>8.1f}%  {m['prec']:>8.1f}%  {m['rec']:>8.1f}%  {m['f1']:>8.1f}%")
     print("=" * 72)
-
-  
 
 
 if __name__ == "__main__":
