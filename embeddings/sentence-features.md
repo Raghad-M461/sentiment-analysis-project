@@ -1,8 +1,5 @@
 # Sentence Features — Learning Notes and Comparison
 
-**Branch:** `feature/contextual-embeddings`  
-**Script:** `sentence_features_comparison.py`
-
 ---
 
 ## Part 1 — Concepts
