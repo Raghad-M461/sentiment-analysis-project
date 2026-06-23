@@ -1,21 +1,4 @@
-"""
-sentence_features_comparison.py
-Branch: feature/contextual-embeddings
 
-Compares three feature representations on the same dataset
-with the same classifier and the same 5-fold CV split:
-
-  1. TF-IDF (baseline from Week 1)
-  2. Averaged GloVe vectors (Week 3)  -- requires --glove path
-  3. Sentence embeddings via all-MiniLM-L6-v2 (this week)
-
-Usage:
-    # full comparison (needs GloVe file + internet for HF model)
-    python sentence_features_comparison.py --glove glove_data/glove.6B.50d.txt
-
-    # sentence embeddings + TF-IDF only (no GloVe file needed)
-    python sentence_features_comparison.py --skip-glove
-"""
 
 import argparse
 import csv
@@ -28,9 +11,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold, cross_validate
 from sklearn.pipeline import make_pipeline
 
-# ── dataset ──────────────────────────────────────────────────────────────────
-# the script looks for the enriched 210-sample CSV first.
-# if it is not there it falls back to the 80-sample hardcoded data.
 DATASET_PATH = os.path.join("embeddings", "sentiment_dataset_enriched.csv")
 
 HARDCODED_TEXTS = [
@@ -111,7 +91,6 @@ def tfidf_features(texts):
 
 
 def glove_features(texts, glove_path):
-    """Average GloVe word vectors per sentence."""
     from gensim.models import KeyedVectors
     print(f"\nloading GloVe from {glove_path} ...")
     kv = KeyedVectors.load_word2vec_format(glove_path, no_header=True, binary=False)
@@ -128,7 +107,6 @@ def glove_features(texts, glove_path):
 
 
 def sentence_embedding_features(texts):
-    """Encode sentences with all-MiniLM-L6-v2."""
     from sentence_transformers import SentenceTransformer
     print("\nloading all-MiniLM-L6-v2 ...")
     st_model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -181,23 +159,7 @@ def main():
         print(f"  {name:<30s}  {m['acc']:>8.1f}%  {m['prec']:>8.1f}%  {m['rec']:>8.1f}%  {m['f1']:>8.1f}%")
     print("=" * 72)
 
-    # ── interpretation ───────────────────────────────────────────────────────
-    if len(rows) >= 2:
-        best_name = max(rows, key=lambda r: r[1]["f1"])[0]
-        print(f"\nbest F1: {best_name}")
-        sent_row = next((r for r in rows if "MiniLM" in r[0]), None)
-        tfidf_row = next((r for r in rows if "TF-IDF" in r[0]), None)
-        if sent_row and tfidf_row:
-            delta = sent_row[1]["f1"] - tfidf_row[1]["f1"]
-            if delta > 0:
-                print(f"sentence embeddings beat TF-IDF by {delta:+.1f}% F1")
-                print("the pretrained contextual representations generalise better than sparse counts")
-            elif delta < 0:
-                print(f"TF-IDF beats sentence embeddings by {-delta:.1f}% F1")
-                print("on this small dataset, sparse exact-match features outperform dense vectors")
-                print("this is a valid result — see sentence-features.md for the interpretation")
-            else:
-                print("both methods tied on F1")
+  
 
 
 if __name__ == "__main__":
