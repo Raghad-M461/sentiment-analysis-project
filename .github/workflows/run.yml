@@ -1,10 +1,13 @@
 name: Contextual Embeddings Exploration
+
 on:
   push:
   workflow_dispatch:
+
 jobs:
   run:
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out the code
         uses: actions/checkout@v4
@@ -27,7 +30,7 @@ jobs:
           python -m nltk.downloader omw-1.4
           python -m nltk.downloader stopwords
 
-      - name: Run original sentiment analysis (baseline)
+      - name: Run original sentiment analysis baseline
         run: python sentiment_analysis.py
 
       - name: Run contextual similarity script
@@ -38,3 +41,9 @@ jobs:
 
       - name: Run error analysis
         run: python error_analysis.py
+
+      - name: Upload error analysis CSV files
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-analysis-results
+          path: analysis/*.csv
