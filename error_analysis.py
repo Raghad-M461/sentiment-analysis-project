@@ -1,18 +1,4 @@
-"""
-error_analysis.py
-Branch: feature/contextual-embeddings
 
-Extracts misclassified reviews from TF-IDF and sentence embedding models,
-compares them, and saves results to analysis/errors.csv.
-
-Usage:
-    python error_analysis.py
-
-Output:
-    analysis/errors_tfidf.csv       — all TF-IDF misclassifications
-    analysis/errors_embeddings.csv  — all embedding misclassifications
-    analysis/errors_comparison.csv  — side-by-side: which model got it wrong
-"""
 
 import csv
 import os
