@@ -1,1 +1,5 @@
+nltk
+gensim
+numpy
 scikit-learn
+sentence-transformers

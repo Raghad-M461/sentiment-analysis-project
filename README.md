@@ -1,13 +1,27 @@
-# Sentiment Analysis Project
+## Run a Prediction
 
-A small machine learning project that reads short pieces of customer feedback
-and classifies them as **Positive** or **Negative**.
+First, train and save the model:
 
-## What it does
-- Stores a labelled dataset of 80 short feedback sentences (40 positive, 40 negative).
-- Converts the text into numbers using TF-IDF.
-- Trains a Logistic Regression model to tell positive and negative apart.
-- Measures how well it works using  cross-validation.
-- Predicts the sentiment of new sentences it has never seen.
+```bash
+python train_and_save.py
+```
 
-## How to run it
+Then run a prediction:
+
+```bash
+python predict.py "Your sentence here"
+```
+
+Example:
+
+```bash
+python predict.py "Not bad, actually quite impressed with how well it performs"
+```
+
+Example output:
+
+```text
+Input      : Not bad, actually quite impressed with how well it performs
+Label      : Positive
+Confidence : 66.00%
+```
