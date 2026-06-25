@@ -1,15 +1,4 @@
-"""
-test_predictions.py
-Branch: feature/contextual-embeddings
 
-Tests the predict_sentiment function on 5 hand-written sentences.
-Includes at least one negation case and one mixed-sentiment case.
-
-Usage:
-    python test_predictions.py
-
-Requires train_and_save.py to have been run first.
-"""
 
 from predict import predict_sentiment
 
