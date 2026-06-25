@@ -1,17 +1,4 @@
-"""
-train_and_save.py
-Branch: feature/contextual-embeddings
 
-Trains the sentence embedding model on the full dataset and saves it to disk.
-Run this once before using predict.py.
-
-Usage:
-    python train_and_save.py
-
-Output:
-    app/model/logreg_classifier.joblib   — trained Logistic Regression
-    app/model/label_classes.joblib       — class names array
-"""
 
 import csv
 import os
@@ -28,26 +15,22 @@ ENCODER_NAME = "all-MiniLM-L6-v2"
 def main():
     os.makedirs(MODEL_DIR, exist_ok=True)
 
-    # ── load dataset ──────────────────────────────────────────────────────
     rows   = list(csv.DictReader(open(DATASET_PATH, encoding="utf-8")))
     texts  = [r["text"]  for r in rows]
     labels = [r["label"] for r in rows]
     print(f"loaded {len(texts)} samples from {DATASET_PATH}")
 
-    # ── encode with sentence-transformers ─────────────────────────────────
     print(f"loading encoder: {ENCODER_NAME} ...")
     encoder = SentenceTransformer(ENCODER_NAME)
     print("encoding sentences ...")
     X = encoder.encode(texts, show_progress_bar=True)
     print(f"embeddings shape: {X.shape}")
 
-    # ── train Logistic Regression on full dataset ─────────────────────────
     print("training Logistic Regression on full dataset ...")
     clf = LogisticRegression(max_iter=1000)
     clf.fit(X, labels)
     print(f"training done. classes: {clf.classes_}")
 
-    # ── save model ────────────────────────────────────────────────────────
     clf_path    = os.path.join(MODEL_DIR, "logreg_classifier.joblib")
     labels_path = os.path.join(MODEL_DIR, "label_classes.joblib")
 
