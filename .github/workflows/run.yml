@@ -1,10 +1,13 @@
 name: Contextual Embeddings Exploration
+
 on:
   push:
   workflow_dispatch:
+
 jobs:
   run:
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out the code
         uses: actions/checkout@v4
@@ -51,6 +54,9 @@ jobs:
       - name: Test predictions
         run: python test_predictions.py
 
+      - name: Save test predictions output
+        run: python test_predictions.py > prediction_results.txt
+
       - name: Test CLI prediction
         run: python predict.py "Not bad, actually quite impressed with how well it performs"
 
@@ -59,3 +65,9 @@ jobs:
         with:
           name: saved-model
           path: app/model/
+
+      - name: Upload prediction results
+        uses: actions/upload-artifact@v4
+        with:
+          name: prediction-results
+          path: prediction_results.txt
