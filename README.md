@@ -1,6 +1,5 @@
 # Sentiment Analysis Project
 
-NLP Engineering Internship – Sohail Smart Solutions
 
 This project uses a Sentence Transformer (`all-MiniLM-L6-v2`) with a Logistic Regression classifier to predict the sentiment of text. The model is also available through a simple FastAPI web service.
 
