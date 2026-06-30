@@ -1,13 +1,10 @@
 name: Sentiment API
-
 on:
   push:
   workflow_dispatch:
-
 jobs:
   run:
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out the code
         uses: actions/checkout@v4
@@ -76,13 +73,47 @@ jobs:
         run: |
           python -m uvicorn api_app:app --host 0.0.0.0 --port 8000 &
           sleep 15
+          echo "--- health check ---"
           curl -s http://localhost:8000/health
+          echo ""
+          echo "--- valid: negation of negative ---"
           curl -s -X POST http://localhost:8000/predict \
                -H "Content-Type: application/json" \
                -d '{"text": "not bad, actually quite impressed with how well it performs"}'
+          echo ""
+          echo "--- valid: negation case ---"
           curl -s -X POST http://localhost:8000/predict \
                -H "Content-Type: application/json" \
                -d '{"text": "This is not good at all, very disappointed with the service"}'
+          echo ""
+          echo "--- invalid: empty text ---"
           curl -s -X POST http://localhost:8000/predict \
                -H "Content-Type: application/json" \
                -d '{"text": ""}'
+          echo ""
+          echo "--- invalid: whitespace only ---"
+          curl -s -X POST http://localhost:8000/predict \
+               -H "Content-Type: application/json" \
+               -d '{"text": "   "}'
+          echo ""
+          echo "--- invalid: too long ---"
+          python3 -c "import json; print(json.dumps({'text': 'x' * 1500}))" > /tmp/long_payload.json
+          curl -s -X POST http://localhost:8000/predict \
+               -H "Content-Type: application/json" \
+               -d @/tmp/long_payload.json
+          echo ""
+          echo "--- invalid: wrong type (number) ---"
+          curl -s -X POST http://localhost:8000/predict \
+               -H "Content-Type: application/json" \
+               -d '{"text": 12345}'
+          echo ""
+          echo "--- invalid: missing field ---"
+          curl -s -X POST http://localhost:8000/predict \
+               -H "Content-Type: application/json" \
+               -d '{}'
+          echo ""
+          echo "--- non-English (Arabic) ---"
+          curl -s -X POST http://localhost:8000/predict \
+               -H "Content-Type: application/json" \
+               -d '{"text": "هذا المنتج رائع جدا"}'
+          echo ""
