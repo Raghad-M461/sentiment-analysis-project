@@ -1,14 +1,14 @@
-
 FROM python:3.11-slim
+
 WORKDIR /app
+
 COPY requirements.txt .
+
 RUN pip install --no-cache-dir -r requirements.txt
+
 RUN python -m nltk.downloader punkt punkt_tab wordnet omw-1.4 stopwords
-COPY api_app.py .
-COPY predict.py .
-COPY preprocessing.py .
-COPY sentiment_analysis.py .
-COPY app/model/ app/model/
+
+COPY . .
 
 EXPOSE 8000
 
