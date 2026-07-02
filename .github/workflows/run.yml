@@ -1,10 +1,13 @@
 name: Sentiment API
+
 on:
   push:
   workflow_dispatch:
+
 jobs:
   run:
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out the code
         uses: actions/checkout@v4
@@ -48,6 +51,9 @@ jobs:
       - name: Train and save model
         run: python train_and_save.py
 
+      - name: Run regression tests
+        run: pytest test_regression.py -v
+
       - name: Test predictions
         run: python test_predictions.py
 
@@ -55,7 +61,8 @@ jobs:
         run: python test_predictions.py > prediction_results.txt
 
       - name: Test CLI prediction
-        run: python predict.py "Not bad, actually quite impressed with how well it performs"
+        run: |
+          python predict.py "Not bad, actually quite impressed with how well it performs"
 
       - name: Upload saved model
         uses: actions/upload-artifact@v4
@@ -73,13 +80,21 @@ jobs:
         run: |
           uvicorn api_app:app --host 0.0.0.0 --port 8000 &
           sleep 5
+
+          echo "Health check:"
           curl -s http://localhost:8000/health
+
+          echo "Positive prediction:"
           curl -s -X POST http://localhost:8000/predict \
                -H "Content-Type: application/json" \
-               -d '{"text": "not bad, actually quite impressed with how well it performs"}'
+               -d '{"text": "Not bad, actually quite impressed with how well it performs"}'
+
+          echo "Negative prediction:"
           curl -s -X POST http://localhost:8000/predict \
                -H "Content-Type: application/json" \
                -d '{"text": "This is not good at all, very disappointed with the service"}'
+
+          echo "Validation test:"
           curl -s -X POST http://localhost:8000/predict \
                -H "Content-Type: application/json" \
                -d '{"text": ""}'
