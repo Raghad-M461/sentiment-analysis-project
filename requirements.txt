@@ -3,4 +3,4 @@ gensim
 numpy
 scikit-learn
 sentence-transformers
-
+pytest
