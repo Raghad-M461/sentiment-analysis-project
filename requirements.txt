@@ -1,6 +1,8 @@
+fastapi
+uvicorn
+joblib
 nltk
 gensim
 numpy
 scikit-learn
 sentence-transformers
-
