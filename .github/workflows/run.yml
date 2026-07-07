@@ -1,85 +1,20 @@
-name: Sentiment API
-on:
-  push:
-  workflow_dispatch:
-jobs:
-  run:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out the code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Download NLTK data
-        run: |
-          python -m nltk.downloader punkt
-          python -m nltk.downloader punkt_tab
-          python -m nltk.downloader wordnet
-          python -m nltk.downloader omw-1.4
-          python -m nltk.downloader stopwords
-
-      - name: Run original sentiment analysis baseline
-        run: python sentiment_analysis.py
-
-      - name: Run contextual similarity script
-        run: python contextual_similarity.py
-
-      - name: Run feature comparison
-        run: python sentence_features_comparison.py --skip-glove
-
-      - name: Run error analysis
-        run: python error_analysis.py
-
-      - name: Upload error analysis CSV files
-        uses: actions/upload-artifact@v4
-        with:
-          name: error-analysis-results
-          path: analysis/*.csv
-
-      - name: Train and save model
-        run: python train_and_save.py
-
-      - name: Test predictions
-        run: python test_predictions.py
-
-      - name: Save test predictions output
-        run: python test_predictions.py > prediction_results.txt
-
-      - name: Test CLI prediction
-        run: python predict.py "Not bad, actually quite impressed with how well it performs"
-
-      - name: Upload saved model
-        uses: actions/upload-artifact@v4
-        with:
-          name: saved-model
-          path: app/model/
-
-      - name: Upload prediction results
-        uses: actions/upload-artifact@v4
-        with:
-          name: prediction-results
-          path: prediction_results.txt
-
       - name: Start API server and test endpoints
+        env:
+          PORT: 8000
         run: |
-          uvicorn api_app:app --host 0.0.0.0 --port 8000 &
-          sleep 5
-          curl -s http://localhost:8000/health
-          curl -s -X POST http://localhost:8000/predict \
-               -H "Content-Type: application/json" \
-               -d '{"text": "not bad, actually quite impressed with how well it performs"}'
-          curl -s -X POST http://localhost:8000/predict \
-               -H "Content-Type: application/json" \
-               -d '{"text": "This is not good at all, very disappointed with the service"}'
-          curl -s -X POST http://localhost:8000/predict \
-               -H "Content-Type: application/json" \
-               -d '{"text": ""}'
+          uvicorn api_app:app --host 0.0.0.0 --port $PORT &
+          sleep 10
+
+          curl -s http://localhost:$PORT/health
+
+          curl -s -X POST http://localhost:$PORT/predict \
+            -H "Content-Type: application/json" \
+            -d '{"text":"not bad, actually quite impressed with how well it performs"}'
+
+          curl -s -X POST http://localhost:$PORT/predict \
+            -H "Content-Type: application/json" \
+            -d '{"text":"This is not good at all, very disappointed with the service"}'
+
+          curl -s -X POST http://localhost:$PORT/predict \
+            -H "Content-Type: application/json" \
+            -d '{"text":""}'
