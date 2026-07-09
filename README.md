@@ -199,7 +199,7 @@ Future improvements include multilingual support, automatic language detection, 
 
 ## Author
 
-**Raghad Mohammed**
+**Raghad Mohammad**
 
 Applied NLP Engineering Internship
 
