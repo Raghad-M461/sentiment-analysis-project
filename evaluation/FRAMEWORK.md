@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The Sohail AI Evaluation Framework v2.0 is a reusable checklist for evaluating AI services across the complete machine learning lifecycle. It combines offline model evaluation with production service evaluation so that different AI projects can be assessed using consistent criteria.
+The Sohail AI Evaluation Framework v2.0 is a reusable framework for evaluating AI services across the complete machine learning lifecycle. It combines offline model evaluation with production service evaluation so that different AI systems can be assessed using consistent and measurable criteria.
 
 ---
 
@@ -20,95 +20,109 @@ The Sohail AI Evaluation Framework v2.0 is a reusable checklist for evaluating A
 
 # 1. Data
 
-| Criterion | Score (1–5) | Why it Matters |
-|------------|:----------:|----------------|
-| Dataset quality | 5 | Clean and representative data improves model performance. |
-| Class balance | 4 | Balanced classes reduce prediction bias. |
-| Label consistency | 5 | Consistent labels improve learning quality. |
-| Data preprocessing | 5 | Proper preprocessing creates reliable model inputs. |
+| Criterion | Score | Why it Matters |
+|-----------|:----:|----------------|
+| Dataset quality | 4 | High-quality datasets improve model reliability. |
+| Class balance | 4 | Balanced data reduces prediction bias. |
+| Label consistency | 5 | Consistent labels improve training quality. |
+| Data preprocessing | 4 | Proper preprocessing creates reliable model inputs. |
+
+**Section Score:** **17 / 20**
 
 ---
 
 # 2. Model
 
-| Criterion | Score (1–5) | Why it Matters |
-|------------|:----------:|----------------|
-| Feature representation | 5 | Better representations improve prediction quality. |
-| Model selection | 5 | Choosing an appropriate model improves performance. |
+| Criterion | Score | Why it Matters |
+|-----------|:----:|----------------|
+| Feature representation | 5 | Good features improve prediction performance. |
+| Model selection | 5 | Choosing an appropriate model increases accuracy. |
 | Confidence estimation | 4 | Confidence scores help identify uncertain predictions. |
-| Generalization | 4 | Models should perform well on unseen data. |
+| Generalization | 3 | Models should perform well on unseen and diverse data. |
+
+**Section Score:** **17 / 20**
 
 ---
 
 # 3. Evaluation
 
-| Criterion | Score (1–5) | Why it Matters |
-|------------|:----------:|----------------|
-| Accuracy | 5 | Measures overall correctness. |
+| Criterion | Score | Why it Matters |
+|-----------|:----:|----------------|
+| Accuracy | 5 | Measures overall prediction correctness. |
 | Precision | 5 | Reduces false positives. |
 | Recall | 5 | Reduces false negatives. |
 | F1-score | 5 | Balances precision and recall. |
 | Confusion Matrix | 5 | Identifies class-specific weaknesses. |
-| Error Analysis | 5 | Explains why predictions fail and guides improvements. |
+| Error Analysis | 4 | Supports continuous model improvement. |
+
+**Section Score:** **29 / 30**
 
 ---
 
 # 4. Service & Deployment
 
-| Criterion | Score (1–5) | Why it Matters |
-|------------|:----------:|----------------|
-| Prediction API | 5 | Makes the model accessible to applications. |
+| Criterion | Score | Why it Matters |
+|-----------|:----:|----------------|
+| Prediction API | 5 | Makes the model accessible through HTTP requests. |
 | Input validation | 5 | Prevents invalid requests from reaching the model. |
-| Error handling | 5 | Improves service reliability. |
-| Docker containerization | 5 | Ensures reproducible deployment. |
-| Cloud deployment | 5 | Makes the service publicly accessible. |
-| Health endpoint | 5 | Allows service availability to be monitored. |
+| Error handling | 5 | Improves reliability and user experience. |
+| Docker containerization | 4 | Provides reproducible deployment, although setup required troubleshooting. |
+| Cloud deployment | 5 | Makes the application publicly accessible. |
+| Health endpoint | 4 | Confirms service availability but provides only basic health information. |
+
+**Section Score:** **28 / 30**
 
 ---
 
 # 5. Monitoring
 
-| Criterion | Score (1–5) | Why it Matters |
-|------------|:----------:|----------------|
-| Structured logging | 5 | Helps diagnose issues after deployment. |
-| Metrics endpoint | 5 | Provides an overview of service health. |
-| Latency monitoring | 5 | Detects performance degradation. |
-| Low-confidence monitoring | 5 | Identifies uncertain or out-of-domain predictions. |
+| Criterion | Score | Why it Matters |
+|-----------|:----:|----------------|
+| Structured logging | 5 | Helps diagnose production issues. |
+| Metrics endpoint | 5 | Summarizes service behaviour. |
+| Latency monitoring | 4 | Tracks API performance over time. |
+| Low-confidence monitoring | 4 | Identifies uncertain predictions for further review. |
+
+**Section Score:** **18 / 20**
 
 ---
 
 # 6. Responsible AI
 
-| Criterion | Score (1–5) | Why it Matters |
-|------------|:----------:|----------------|
+| Criterion | Score | Why it Matters |
+|-----------|:----:|----------------|
 | Documented limitations | 5 | Helps users understand system constraints. |
-| Transparency | 5 | Builds trust in the service. |
-| Out-of-domain awareness | 4 | Highlights unsupported inputs. |
-| Fairness evaluation | 3 | Additional fairness testing would improve confidence. |
+| Transparency | 4 | Explains model behaviour and evaluation process. |
+| Out-of-domain awareness | 3 | Unsupported languages may still produce predictions. |
+| Fairness evaluation | 3 | Additional fairness and bias testing would strengthen the evaluation. |
+
+**Section Score:** **15 / 20**
 
 ---
 
 # Evaluation of My Deployed Service
 
 | Section | Score |
-|---------|-------|
-| Data | 19 / 20 |
-| Model | 18 / 20 |
-| Evaluation | 30 / 30 |
-| Service & Deployment | 30 / 30 |
-| Monitoring | 20 / 20 |
-| Responsible AI | 17 / 20 |
+|---------|-------:|
+| Data | 17 / 20 |
+| Model | 17 / 20 |
+| Evaluation | 29 / 30 |
+| Service & Deployment | 28 / 30 |
+| Monitoring | 18 / 20 |
+| Responsible AI | 15 / 20 |
 
 ## Overall Score
 
-**134 / 140 (95.7%)**
+**124 / 140 (88.6%)**
 
-**Overall Rating:** Excellent – Production Ready
+**Overall Rating:** **Very Good – Production Ready**
 
 ---
 
 # Verdict
 
-The deployed sentiment analysis service performed well across most evaluation categories. The project progressed from a basic TF-IDF sentiment classifier to a production-ready service using contextual sentence embeddings, a FastAPI interface, Docker containerization, cloud deployment, and runtime monitoring. Offline evaluation showed improved model performance through better feature representations and detailed error analysis, while service-level evaluation demonstrated successful deployment, structured logging, monitoring, and reliable API responses.
+The deployed sentiment analysis service performs well across the complete machine learning lifecycle. The project includes data preprocessing, model comparison, comprehensive offline evaluation, a FastAPI-based prediction service, Docker containerization, public cloud deployment, and runtime monitoring through structured logging and a metrics endpoint. These features make the application reliable, maintainable, and suitable as a production-ready demonstration project.
 
-The framework also highlights areas for future improvement. Although confidence monitoring helps identify uncertain predictions, the model is still primarily designed for English text and does not include automatic language detection. In addition, fairness and bias testing were not performed, leaving opportunities for further evaluation. Future work should focus on expanding multilingual support and introducing more comprehensive Responsible AI testing. Overall, the service meets the requirements of a small production-ready AI application and provides a strong foundation for future development.
+The evaluation also highlights several areas for improvement. The model is primarily designed for English text, meaning predictions for other languages may not be reliable. In addition, although low-confidence predictions are tracked, the service does not automatically detect unsupported languages or perform dedicated fairness and bias evaluations. The deployment and monitoring implementation are appropriate for a small production service but could be extended with more advanced monitoring and alerting tools.
+
+Overall, the framework shows that the project has a strong technical foundation while identifying realistic opportunities for future improvement.
