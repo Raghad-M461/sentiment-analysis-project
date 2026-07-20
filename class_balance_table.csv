@@ -1,0 +1,10 @@
+split,label,count,percentage,total_in_split
+Train,Negative,49,33.33,147
+Train,Neutral,49,33.33,147
+Train,Positive,49,33.33,147
+Validation,Negative,11,35.48,31
+Validation,Neutral,10,32.26,31
+Validation,Positive,10,32.26,31
+Test (Frozen),Negative,10,31.25,32
+Test (Frozen),Neutral,11,34.38,32
+Test (Frozen),Positive,11,34.38,32

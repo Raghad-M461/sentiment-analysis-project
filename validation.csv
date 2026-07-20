@@ -1,0 +1,32 @@
+text,label,source,category
+The software was excellent.,Positive,original_manual,template
+I found the platform really great.,Positive,original_manual,template
+Such an unreliable tool.,Negative,original_manual,template
+"It's fine, if your standards are on the floor.",Negative,enriched_manual,sarcasm
+"Not what I expected, and not in a good way.",Negative,enriched_manual,negation
+The experience was friendly.,Positive,original_manual,template
+A poor website overall.,Negative,original_manual,template
+There's a headphone jack on the bottom.,Neutral,enriched_manual,descriptive
+Can't believe they charge money for this.,Negative,enriched_manual,implicit
+I found the price really horrible.,Negative,original_manual,template
+The dashboard felt reliable to me.,Positive,original_manual,template
+A small light blinks while it's charging.,Neutral,enriched_manual,descriptive
+Can I use this outside the country?,Neutral,enriched_manual,question
+"It's not perfect, yet I'd buy it again in a heartbeat.",Positive,enriched_manual,mixed_lean_positive
+The update is scheduled for next Tuesday.,Neutral,enriched_manual,factual
+I found the delivery really terrible.,Negative,original_manual,template
+The screen measures six inches diagonally.,Neutral,enriched_manual,factual
+"Five stars, no complaints whatsoever.",Positive,enriched_manual,negation_phrasing
+The tool felt frustrating to me.,Negative,original_manual,template
+It uses the same charger as the last model.,Neutral,enriched_manual,comparative_neutral
+I set it up over the weekend.,Neutral,enriched_manual,context
+The firmware version is listed in the about page.,Neutral,enriched_manual,factual
+A reliable service overall.,Positive,original_manual,template
+"Support actually called me back within the hour, rare these days.",Positive,enriched_manual,implicit
+Avoid unless you enjoy frustration.,Negative,enriched_manual,advice
+"The package includes a charger, a cable, and a manual.",Neutral,enriched_manual,factual
+I found the experience really outstanding.,Positive,original_manual,template
+The company is based in Germany.,Neutral,enriched_manual,factual
+The interface was perfect.,Positive,original_manual,template
+A disappointing product overall.,Negative,original_manual,template
+Louder than a jet engine and just as relaxing.,Negative,enriched_manual,sarcasm_comparative
