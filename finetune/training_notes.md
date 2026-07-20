@@ -111,17 +111,11 @@ Therefore, the model completed all four planned epochs.
 
 ## Issues and Notes
 
-Training completed successfully using GitHub Actions.
+Training completed successfully without any errors.
 
-The training ran on CPU because CUDA was not available. Despite using CPU, the training completed successfully because the dataset was relatively small.
+The model was trained on CPU because GPU (CUDA) was not available. Since the dataset was small, training completed successfully within approximately 23 seconds.
 
-A warning appeared indicating that requests to the Hugging Face Hub were unauthenticated. This did not prevent the model from downloading or training, but an `HF_TOKEN` could be added in the future for higher Hugging Face download rate limits.
-
-The pretrained DistilBERT classification-head parameters were newly initialized. This is expected because the original base model does not contain a trained classification head for this specific three-class sentiment task.
-
-A PyTorch warning also appeared because `pin_memory` was enabled without a GPU. This warning did not affect the training results.
-
-No major errors occurred during the training process.
+No issues affected the fine-tuning process or the generated checkpoint.
 
 ## Conclusion
 
