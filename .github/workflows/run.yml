@@ -77,23 +77,50 @@ jobs:
           python -m uvicorn api_app:app --host 0.0.0.0 --port 8000 &
           API_PID=$!
 
-          echo "Waiting for API server to start..."
-          sleep 5
+          echo "Waiting for API server to become ready..."
 
-          echo "Testing health endpoint..."
-          curl --fail --show-error --silent http://localhost:8000/health
+          READY=false
 
-          echo "Testing positive prediction..."
-          curl --fail --show-error --silent \
-            -X POST http://localhost:8000/predict \
+          for i in {1..60}; do
+            if curl --silent --fail http://127.0.0.1:8000/health > /dev/null; then
+              READY=true
+              echo "API is ready."
+              break
+            fi
+
+            if ! kill -0 "$API_PID" 2>/dev/null; then
+              echo "API server exited unexpectedly."
+              wait "$API_PID"
+              exit 1
+            fi
+
+            echo "Waiting... ($i/60)"
+            sleep 2
+          done
+
+          if [ "$READY" = false ]; then
+            echo "API never became ready."
+            kill "$API_PID" || true
+            exit 1
+          fi
+
+          echo "Health endpoint:"
+          curl --fail --show-error http://127.0.0.1:8000/health
+          echo
+
+          echo "Positive prediction:"
+          curl --fail --show-error \
+            -X POST http://127.0.0.1:8000/predict \
             -H "Content-Type: application/json" \
             -d '{"text":"not bad, actually quite impressed with how well it performs"}'
+          echo
 
-          echo "Testing negative prediction..."
-          curl --fail --show-error --silent \
-            -X POST http://localhost:8000/predict \
+          echo "Negative prediction:"
+          curl --fail --show-error \
+            -X POST http://127.0.0.1:8000/predict \
             -H "Content-Type: application/json" \
             -d '{"text":"This is not good at all, very disappointed with the service"}'
+          echo
 
-          echo "Stopping API server..."
-          kill $API_PID
+          kill "$API_PID"
+          wait "$API_PID" || true
