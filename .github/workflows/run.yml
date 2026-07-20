@@ -1,126 +1,92 @@
-name: Sentiment API
+name: Fine-Tuning Preparation
 
 on:
   push:
+    branches:
+      - feature/finetuning
+
+  pull_request:
+    branches:
+      - main
+
   workflow_dispatch:
 
 jobs:
-  run:
+  prepare-finetuning:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out the code
+      - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Download NLTK data
+      - name: Verify original dataset
         run: |
-          python -m nltk.downloader punkt
-          python -m nltk.downloader punkt_tab
-          python -m nltk.downloader wordnet
-          python -m nltk.downloader omw-1.4
-          python -m nltk.downloader stopwords
-
-      - name: Run original sentiment analysis baseline
-        run: python sentiment_analysis.py
-
-      - name: Run contextual similarity script
-        run: python contextual_similarity.py
-
-      - name: Run feature comparison
-        run: python sentence_features_comparison.py --skip-glove
-
-      - name: Run error analysis
-        run: python error_analysis.py
-
-      - name: Upload error analysis CSV files
-        uses: actions/upload-artifact@v4
-        with:
-          name: error-analysis-results
-          path: analysis/*.csv
-
-      - name: Train and save model
-        run: python train_and_save.py
-
-      - name: Test predictions
-        run: python test_predictions.py
-
-      - name: Save test predictions output
-        run: python test_predictions.py > prediction_results.txt
-
-      - name: Test CLI prediction
-        run: python predict.py "Not bad, actually quite impressed with how well it performs"
-
-      - name: Upload saved model
-        uses: actions/upload-artifact@v4
-        with:
-          name: saved-model
-          path: app/model/
-
-      - name: Upload prediction results
-        uses: actions/upload-artifact@v4
-        with:
-          name: prediction-results
-          path: prediction_results.txt
-
-      - name: Start API server and test endpoints
-        run: |
-          python -m uvicorn api_app:app --host 0.0.0.0 --port 8000 &
-          API_PID=$!
-
-          echo "Waiting for API server to become ready..."
-
-          READY=false
-
-          for i in {1..60}; do
-            if curl --silent --fail http://127.0.0.1:8000/health > /dev/null; then
-              READY=true
-              echo "API is ready."
-              break
-            fi
-
-            if ! kill -0 "$API_PID" 2>/dev/null; then
-              echo "API server exited unexpectedly."
-              wait "$API_PID"
-              exit 1
-            fi
-
-            echo "Waiting... ($i/60)"
-            sleep 2
-          done
-
-          if [ "$READY" = false ]; then
-            echo "API never became ready."
-            kill "$API_PID" || true
+          if [ ! -f "sentiment_dataset_enriched.csv" ]; then
+            echo "ERROR: sentiment_dataset_enriched.csv was not found."
             exit 1
           fi
 
-          echo "Health endpoint:"
-          curl --fail --show-error http://127.0.0.1:8000/health
-          echo
+          echo "Original dataset found successfully."
+          ls -lh sentiment_dataset_enriched.csv
 
-          echo "Positive prediction:"
-          curl --fail --show-error \
-            -X POST http://127.0.0.1:8000/predict \
-            -H "Content-Type: application/json" \
-            -d '{"text":"not bad, actually quite impressed with how well it performs"}'
-          echo
+      - name: Create frozen dataset splits
+        run: |
+          python make_splits_and_balance_table.py
 
-          echo "Negative prediction:"
-          curl --fail --show-error \
-            -X POST http://127.0.0.1:8000/predict \
-            -H "Content-Type: application/json" \
-            -d '{"text":"This is not good at all, very disappointed with the service"}'
-          echo
+      - name: Verify generated dataset files
+        run: |
+          echo "Files inside the data folder:"
+          ls -lh data
 
-          kill "$API_PID"
-          wait "$API_PID" || true
+          echo ""
+          echo "Class-balance table:"
+          cat data/class_balance_table.csv
+
+          test -f data/train.csv
+          test -f data/validation.csv
+          test -f data/test_frozen.csv
+          test -f data/class_balance_table.csv
+
+          echo ""
+          echo "All four dataset files were generated successfully."
+
+     
+      - name: Load model and tokenize samples
+        run: |
+          mkdir -p finetune
+          python load_and_tokenize_check.py 2>&1 | tee finetune/load_and_tokenize.log
+
+      - name: Verify fine-tuning documentation
+        run: |
+          test -f finetune/notes.md
+          test -f finetune/load_and_tokenize.log
+
+          echo "Fine-tuning notes and loading log found."
+          echo ""
+          echo "Log contents:"
+          cat finetune/load_and_tokenize.log
+
+      - name: Upload fine-tuning deliverables
+        uses: actions/upload-artifact@v4
+        with:
+          name: finetuning-preparation-deliverables
+          path: |
+            finetune/notes.md
+            finetune/load_and_tokenize.log
+            data/train.csv
+            data/validation.csv
+            data/test_frozen.csv
+            data/class_balance_table.csv
+          if-no-files-found: error
+          retention-days: 30
