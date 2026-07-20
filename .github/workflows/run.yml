@@ -1,4 +1,4 @@
-name: Fine-Tuning Preparation
+name: Fine-Tuning Training
 
 on:
   push:
@@ -12,8 +12,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  prepare-finetuning:
+  train-distilbert:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     steps:
       - name: Check out repository
@@ -61,27 +62,36 @@ jobs:
           echo ""
           echo "All four dataset files were generated successfully."
 
-     
       - name: Load model and tokenize samples
         run: |
           mkdir -p finetune
           python load_and_tokenize_check.py 2>&1 | tee finetune/load_and_tokenize.log
 
-      - name: Verify fine-tuning documentation
+      - name: Fine-tune DistilBERT
         run: |
-          test -f finetune/load_and_tokenize.log
+          python finetune/train_distilbert.py 2>&1 | tee finetune/training.log
 
-          echo "Fine-tuning notes and loading log found."
+      - name: Verify training deliverables
+        run: |
+          test -f finetune/training.log
+          test -f finetune/epoch_metrics.json
+          test -d finetune/best_checkpoint
+
+          echo "Best checkpoint files:"
+          ls -lh finetune/best_checkpoint
+
           echo ""
-          echo "Log contents:"
-          cat finetune/load_and_tokenize.log
+          echo "Epoch metrics:"
+          cat finetune/epoch_metrics.json
 
-      - name: Upload fine-tuning deliverables
+      - name: Upload fine-tuning training deliverables
         uses: actions/upload-artifact@v4
         with:
-          name: finetuning-preparation-deliverables
+          name: finetuning-training-deliverables
           path: |
-            finetune/load_and_tokenize.log
+            finetune/training.log
+            finetune/epoch_metrics.json
+            finetune/best_checkpoint/
             data/train.csv
             data/validation.csv
             data/test_frozen.csv
