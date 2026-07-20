@@ -19,13 +19,15 @@ from transformers import (
 MODEL_NAME = "distilbert-base-uncased"
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DATA_DIR = PROJECT_ROOT / "data"
-OUTPUT_DIR = PROJECT_ROOT / "finetune" / "training_output"
-BEST_MODEL_DIR = PROJECT_ROOT / "finetune" / "best_checkpoint"
-METRICS_FILE = PROJECT_ROOT / "finetune" / "epoch_metrics.json"
 
-TRAIN_FILE = DATA_DIR / "train.csv"
-VALIDATION_FILE = DATA_DIR / "validation.csv"
+TRAIN_FILE = PROJECT_ROOT / "train.csv"
+VALIDATION_FILE = PROJECT_ROOT / "validation.csv"
+
+FINETUNE_DIR = PROJECT_ROOT / "finetune"
+OUTPUT_DIR = FINETUNE_DIR / "training_output"
+BEST_MODEL_DIR = FINETUNE_DIR / "best_checkpoint"
+METRICS_FILE = FINETUNE_DIR / "epoch_metrics.json"
+
 
 LABEL_TO_ID = {
     "Negative": 0,
@@ -43,7 +45,10 @@ ID_TO_LABEL = {
 def load_split(file_path: Path) -> Dataset:
 
     if not file_path.exists():
-        raise FileNotFoundError(f"Dataset file not found: {file_path}")
+        raise FileNotFoundError(
+            f"Dataset file was not found: {file_path}\n"
+            "Make sure train.csv and validation.csv are in the repository root."
+        )
 
     dataframe = pd.read_csv(file_path)
 
@@ -58,23 +63,29 @@ def load_split(file_path: Path) -> Dataset:
 
     dataframe = dataframe[["text", "label"]].copy()
     dataframe = dataframe.dropna(subset=["text", "label"])
+
     dataframe["text"] = dataframe["text"].astype(str).str.strip()
     dataframe["label"] = dataframe["label"].astype(str).str.strip()
+
+    dataframe = dataframe[dataframe["text"] != ""]
 
     unknown_labels = set(dataframe["label"]) - set(LABEL_TO_ID)
 
     if unknown_labels:
         raise ValueError(
             f"Unknown labels found in {file_path.name}: "
-            f"{sorted(unknown_labels)}"
+            f"{sorted(unknown_labels)}\n"
+            f"Expected labels: {sorted(LABEL_TO_ID)}"
         )
 
-    dataframe = dataframe[dataframe["text"] != ""]
     dataframe["labels"] = dataframe["label"].map(LABEL_TO_ID)
 
     dataframe = dataframe[["text", "labels"]].reset_index(drop=True)
 
-    return Dataset.from_pandas(dataframe, preserve_index=False)
+    return Dataset.from_pandas(
+        dataframe,
+        preserve_index=False,
+    )
 
 
 def compute_metrics(evaluation_prediction):
@@ -83,11 +94,20 @@ def compute_metrics(evaluation_prediction):
     predictions = np.argmax(logits, axis=-1)
 
     return {
-        "accuracy": accuracy_score(labels, predictions)
+        "accuracy": float(
+            accuracy_score(labels, predictions)
+        )
     }
 
 
 def main():
+    FINETUNE_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    print("=" * 60)
+    print("DistilBERT Fine-Tuning")
+    print("=" * 60)
+
     print(f"PyTorch version: {torch.__version__}")
     print(f"CUDA available: {torch.cuda.is_available()}")
 
@@ -96,10 +116,13 @@ def main():
     else:
         print("Training will run on CPU.")
 
+    print(f"\nTraining file: {TRAIN_FILE}")
+    print(f"Validation file: {VALIDATION_FILE}")
+
     train_dataset = load_split(TRAIN_FILE)
     validation_dataset = load_split(VALIDATION_FILE)
 
-    print(f"Training examples: {len(train_dataset)}")
+    print(f"\nTraining examples: {len(train_dataset)}")
     print(f"Validation examples: {len(validation_dataset)}")
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
@@ -123,7 +146,9 @@ def main():
         remove_columns=["text"],
     )
 
-    data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
+    data_collator = DataCollatorWithPadding(
+        tokenizer=tokenizer
+    )
 
     model = AutoModelForSequenceClassification.from_pretrained(
         MODEL_NAME,
@@ -171,6 +196,8 @@ def main():
         ],
     )
 
+    print("\nStarting training...\n")
+
     train_result = trainer.train()
 
     trainer.save_model(str(BEST_MODEL_DIR))
@@ -179,14 +206,40 @@ def main():
     log_history = trainer.state.log_history
 
     with open(METRICS_FILE, "w", encoding="utf-8") as file:
-        json.dump(log_history, file, indent=2)
+        json.dump(
+            log_history,
+            file,
+            indent=2,
+        )
 
-    print("\nTraining complete.")
-    print(f"Best checkpoint: {trainer.state.best_model_checkpoint}")
-    print(f"Best validation metric: {trainer.state.best_metric}")
+    final_validation_results = trainer.evaluate()
+
+    print("\n" + "=" * 60)
+    print("Training complete")
+    print("=" * 60)
+
+    print(
+        f"Best checkpoint: "
+        f"{trainer.state.best_model_checkpoint}"
+    )
+    print(
+        f"Best validation loss: "
+        f"{trainer.state.best_metric}"
+    )
+    print(
+        f"Final training loss: "
+        f"{train_result.training_loss:.4f}"
+    )
+    print(
+        f"Final validation loss: "
+        f"{final_validation_results['eval_loss']:.4f}"
+    )
+    print(
+        f"Final validation accuracy: "
+        f"{final_validation_results['eval_accuracy']:.4f}"
+    )
     print(f"Saved best model to: {BEST_MODEL_DIR}")
     print(f"Saved metrics to: {METRICS_FILE}")
-    print(f"Final training loss: {train_result.training_loss:.4f}")
 
 
 if __name__ == "__main__":
