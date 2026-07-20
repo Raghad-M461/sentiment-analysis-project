@@ -1,0 +1,1216 @@
+ChatGPT
+
+
+
+
+
+Learn (≈50%) —
+finetune/notes.md
+The difference between using a pretrained model as a frozen feature extractor (Weeks 4–5) vs. fine-tuning it (updating its weights on your own data).
+Mechanically: pretrained model + a small classification head, trained together on your sentiment data.
+Plain-language terms: epoch, batch size, learning rate, overfitting — and why fine-tuning uses a much smaller learning rate than training from scratch.
+Why a frozen test set is non-negotiable for an honest comparison later.
+Answer in 150 words: why might fine-tuning beat your Week-4 frozen-embeddings + Logistic Regression — and when might it NOT be worth it?
+
+Apply (≈50%)
+Branch:
+feature/finetuning
+
+Load your existing cleaned dataset; make a 70/15/15 train/val/test split and freeze the test set (save separately, untouched until Wednesday).
+Document class balance across the three splits (reuse your Week-2 data-card style).
+Install
+transformers
++
+datasets
+; load
+distilbert-base-uncased
++ tokenizer without errors.
+Tokenize 2–3 sample sentences and inspect input IDs + attention mask.
+Deliverables
+finetune/notes.md
++ frozen splits + class-balance table + a log proving the model/tokenizer load and tokenize. new inerhsip task note i use github
+
+Stopped thinking
+
+english
+
+Here's a clean GitHub task plan you can follow.
+
+Week X – Fine-Tuning Preparation
+1. Create a New Branch
+git checkout -b feature/finetuning
+2. Install Required Packages
+pip install transformers datasets
+Verify installation:
+
+pip show transformers
+pip show datasets
+3. Load Your Existing Cleaned Dataset
+Reuse the cleaned dataset from your previous internship tasks.
+
+Split it into:
+
+70% Training
+
+15% Validation
+
+15% Test
+
+The test set must be frozen.
+
+Example structure:
+
+data/
+│
+├── train.csv
+├── validation.csv
+└── test_frozen.csv
+Do not modify test_frozen.csv after creating it.
+
+4. Document Class Balance
+Create a table similar to your Week-2 Data Card.
+
+Split	Positive	Negative	Total
+Train	XX	XX	XXX
+Validation	XX	XX	XXX
+Test (Frozen)	XX	XX	XXX
+5. Load DistilBERT
+from transformers import AutoTokenizer, AutoModel
+
+tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
+model = AutoModel.from_pretrained("distilbert-base-uncased")
+
+print("Tokenizer loaded successfully.")
+print("Model loaded successfully.")
+Expected output:
+
+Tokenizer loaded successfully.
+Model loaded successfully.
+6. Tokenize Sample Sentences
+samples = [
+    "I absolutely loved this movie!",
+    "The product arrived broken.",
+    "It was okay, nothing special."
+]
+
+encoding = tokenizer(
+    samples,
+    padding=True,
+    truncation=True,
+    return_tensors="pt"
+)
+
+print("Input IDs:")
+print(encoding["input_ids"])
+
+print("\nAttention Mask:")
+print(encoding["attention_mask"])
+Save the console output as your tokenization log.
+
+finetune/notes.md
+Frozen Feature Extractor vs Fine-Tuning
+A pretrained model already understands language from large-scale training. In the frozen feature extractor approach, the pretrained model's weights stay fixed, and only a separate classifier (such as Logistic Regression) learns from the extracted embeddings. In fine-tuning, the pretrained model and a small classification head are trained together so the model adapts to the sentiment dataset.
+
+An epoch is one complete pass through the training data. Batch size is the number of samples processed before updating the model. The learning rate controls how much the model's weights change after each update. Overfitting happens when the model memorizes the training data instead of learning patterns that generalize.
+
+Fine-tuning uses a much smaller learning rate because the pretrained weights already contain useful language knowledge. Large updates could destroy this knowledge.
+
+150-Word Answer
+Fine-tuning can outperform the frozen-embedding plus Logistic Regression approach because the pretrained model is allowed to adapt its internal representations to the sentiment dataset. Instead of relying on generic language features, it learns task-specific patterns such as sentiment expressions, negation, and domain-specific vocabulary. This often leads to higher accuracy, especially when enough labeled data is available.
+
+However, fine-tuning is not always the best choice. It requires more computation, longer training time, and greater memory than using frozen embeddings. With very small datasets, fine-tuning may overfit and provide little or no improvement over a simpler classifier. It also requires careful tuning of hyperparameters such as the learning rate and batch size. When computational resources are limited or quick experimentation is needed, frozen embeddings with Logistic Regression can still provide strong performance while being much faster and easier to train.
+
+Expected Repository Structure
+project/
+│
+├── data/
+│   ├── train.csv
+│   ├── validation.csv
+│   └── test_frozen.csv
+│
+├── finetune/
+│   ├── notes.md
+│   ├── class_balance.csv
+│   └── tokenize_log.txt
+│
+├── notebooks/
+│   └── finetuning_setup.ipynb
+│
+├── requirements.txt
+└── README.md
+Finally, commit and push your work:
+
+git add .
+git commit -m "Prepare dataset and environment for fine-tuning"
+git push -u origin feature/finetuning
+
+
+network_note.txt
+Document
+
+load_and_tokenize_check.py
+Python
+
+make_splits_and_balance_table.py
+Python
+
+notes (1).md
+File
+
+These files look well prepared and collectively cover almost everything required for the internship task.
+
+What each file does
+notes (1).md – Covers all of the required theory:
+
+Frozen feature extractor vs. fine-tuning
+
+How fine-tuning works mechanically
+
+Epoch, batch size, learning rate, overfitting
+
+Why fine-tuning uses a smaller learning rate
+
+Why the test set must remain frozen
+
+150-word reflection on when fine-tuning helps and when it may not be worth it 
+
+ 
+
+
+make_splits_and_balance_table.py – Creates the required 70/15/15 stratified train/validation/test split, saves each split separately, and generates a class-balance table. It also reminds you not to touch the test set after creation. 
+
+ 
+
+
+load_and_tokenize_check.py – Loads distilbert-base-uncased, creates a fresh 2-class classification head, tokenizes sample sentences, and prints the input IDs and attention masks as required. 
+
+
+network_note.txt – Explains that the loading failure in this environment is due to blocked access to Hugging Face, not a problem with your code. It recommends running the script on your own machine or Google Colab and saving that output as your log. 
+
+
+One thing still missing
+Your deliverables require proof that the model and tokenizer loaded successfully. The current environment cannot provide that because it cannot access huggingface.co. 
+
+
+Run this on your local machine or Google Colab:
+
+python load_and_tokenize_check.py
+Save the console output as something like:
+
+finetune/logs/tokenize_log.txt
+and commit it along with:
+
+finetune/notes.md
+
+data/train.csv
+
+data/val.csv
+
+data/test.csv (frozen)
+
+data/class_balance_table.csv
+
+finetune/logs/tokenize_log.txt
+
+Once you have that log, your submission should satisfy all the listed deliverables.
+
+
+step by step fitsy 
+Learn (≈50%) —
+finetune/notes.md
+The difference between using a pretrained model as a frozen feature extractor (Weeks 4–5) vs. fine-tuning it (updating its weights on your own data).
+Mechanically: pretrained model + a small classification head, trained together on your sentiment data.
+Plain-language terms: epoch, batch size, learning rate, overfitting — and why fine-tuning uses a much smaller learning rate than training from scratch.
+Why a frozen test set is non-negotiable for an honest comparison later.
+Answer in 150 words: why might fine-tuning beat your Week-4 frozen-embeddings + Logistic Regression — and when might it NOT be worth it?
+
+Apply (≈50%)
+Branch:
+feature/finetuning
+
+Load your existing cleaned dataset; make a 70/15/15 train/val/test split and freeze the test set (save separately, untouched until Wednesday).
+Document class balance across the three splits (reuse your Week-2 data-card style).
+Install
+transformers
++
+datasets
+; load
+distilbert-base-uncased
++ tokenizer without errors.
+Tokenize 2–3 sample sentences and inspect input IDs + attention mask.
+Deliverables
+finetune/notes.md
++ frozen splits + class-balance table + a log proving the model/tokenizer load and tokenize. new inerhsip task note i use github
+
+Stopped thinking
+
+english
+
+Here's a clean GitHub task plan you can follow.
+
+Week X – Fine-Tuning Preparation
+1. Create a New Branch
+git checkout -b feature/finetuning
+2. Install Required Packages
+pip install transformers datasets
+Verify installation:
+
+pip show transformers
+pip show datasets
+3. Load Your Existing Cleaned Dataset
+Reuse the cleaned dataset from your previous internship tasks.
+
+Split it into:
+
+70% Training
+
+15% Validation
+
+15% Test
+
+The test set must be frozen.
+
+Example structure:
+
+data/
+│
+├── train.csv
+├── validation.csv
+└── test_frozen.csv
+Do not modify test_frozen.csv after creating it.
+
+4. Document Class Balance
+Create a table similar to your Week-2 Data Card.
+
+Split	Positive	Negative	Total
+Train	XX	XX	XXX
+Validation	XX	XX	XXX
+Test (Frozen)	XX	XX	XXX
+5. Load DistilBERT
+from transformers import AutoTokenizer, AutoModel
+
+tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
+model = AutoModel.from_pretrained("distilbert-base-uncased")
+
+print("Tokenizer loaded successfully.")
+print("Model loaded successfully.")
+Expected output:
+
+Tokenizer loaded successfully.
+Model loaded successfully.
+6. Tokenize Sample Sentences
+samples = [
+    "I absolutely loved this movie!",
+    "The product arrived broken.",
+    "It was okay, nothing special."
+]
+
+encoding = tokenizer(
+    samples,
+    padding=True,
+    truncation=True,
+    return_tensors="pt"
+)
+
+print("Input IDs:")
+print(encoding["input_ids"])
+
+print("\nAttention Mask:")
+print(encoding["attention_mask"])
+Save the console output as your tokenization log.
+
+finetune/notes.md
+Frozen Feature Extractor vs Fine-Tuning
+A pretrained model already understands language from large-scale training. In the frozen feature extractor approach, the pretrained model's weights stay fixed, and only a separate classifier (such as Logistic Regression) learns from the extracted embeddings. In fine-tuning, the pretrained model and a small classification head are trained together so the model adapts to the sentiment dataset.
+
+An epoch is one complete pass through the training data. Batch size is the number of samples processed before updating the model. The learning rate controls how much the model's weights change after each update. Overfitting happens when the model memorizes the training data instead of learning patterns that generalize.
+
+Fine-tuning uses a much smaller learning rate because the pretrained weights already contain useful language knowledge. Large updates could destroy this knowledge.
+
+150-Word Answer
+Fine-tuning can outperform the frozen-embedding plus Logistic Regression approach because the pretrained model is allowed to adapt its internal representations to the sentiment dataset. Instead of relying on generic language features, it learns task-specific patterns such as sentiment expressions, negation, and domain-specific vocabulary. This often leads to higher accuracy, especially when enough labeled data is available.
+
+However, fine-tuning is not always the best choice. It requires more computation, longer training time, and greater memory than using frozen embeddings. With very small datasets, fine-tuning may overfit and provide little or no improvement over a simpler classifier. It also requires careful tuning of hyperparameters such as the learning rate and batch size. When computational resources are limited or quick experimentation is needed, frozen embeddings with Logistic Regression can still provide strong performance while being much faster and easier to train.
+
+Expected Repository Structure
+project/
+│
+├── data/
+│   ├── train.csv
+│   ├── validation.csv
+│   └── test_frozen.csv
+│
+├── finetune/
+│   ├── notes.md
+│   ├── class_balance.csv
+│   └── tokenize_log.txt
+│
+├── notebooks/
+│   └── finetuning_setup.ipynb
+│
+├── requirements.txt
+└── README.md
+Finally, commit and push your work:
+
+git add .
+git commit -m "Prepare dataset and environment for fine-tuning"
+git push -u origin feature/finetuning
+
+
+network_note.txt
+Document
+
+load_and_tokenize_check.py
+Python
+
+make_splits_and_balance_table.py
+Python
+
+notes (1).md
+File
+
+These files look well prepared and collectively cover almost everything required for the internship task.
+
+What each file does
+notes (1).md – Covers all of the required theory:
+
+Frozen feature extractor vs. fine-tuning
+
+How fine-tuning works mechanically
+
+Epoch, batch size, learning rate, overfitting
+
+Why fine-tuning uses a smaller learning rate
+
+Why the test set must remain frozen
+
+150-word reflection on when fine-tuning helps and when it may not be worth it 
+
+ 
+
+
+make_splits_and_balance_table.py – Creates the required 70/15/15 stratified train/validation/test split, saves each split separately, and generates a class-balance table. It also reminds you not to touch the test set after creation. 
+
+ 
+
+
+load_and_tokenize_check.py – Loads distilbert-base-uncased, creates a fresh 2-class classification head, tokenizes sample sentences, and prints the input IDs and attention masks as required. 
+
+
+network_note.txt – Explains that the loading failure in this environment is due to blocked access to Hugging Face, not a problem with your code. It recommends running the script on your own machine or Google Colab and saving that output as your log. 
+
+
+One thing still missing
+Your deliverables require proof that the model and tokenizer loaded successfully. The current environment cannot provide that because it cannot access huggingface.co. 
+
+
+Run this on your local machine or Google Colab:
+
+python load_and_tokenize_check.py
+Save the console output as something like:
+
+finetune/logs/tokenize_log.txt
+and commit it along with:
+
+finetune/notes.md
+
+data/train.csv
+
+data/val.csv
+
+data/test.csv (frozen)
+
+data/class_balance_table.csv
+
+finetune/logs/tokenize_log.txt
+
+Once you have that log, your submission should satisfy all the listed deliverables.
+
+step by step fitsy 
+
+
+Library
+/
+load_and_tokenize_check.py
+More actions
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+"""
+Sanity-check script for Day/Week: Fine-tuning setup.
+Loads distilbert-base-uncased + tokenizer, tokenizes sample sentences,
+and prints input_ids / attention_mask so we can visually confirm the
+pipeline works before touching real data.
+"""
+
+import sys
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+MODEL_NAME = "distilbert-base-uncased"
+
+def main():
+    print(f"Python: {sys.version.split()[0]}")
+    print(f"Torch: {torch.__version__}")
+
+    print(f"\nLoading tokenizer: {MODEL_NAME} ...")
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    print("Tokenizer loaded OK:", type(tokenizer).__name__)
+
+    print(f"\nLoading model: {MODEL_NAME} (with a fresh 2-class classification head) ...")
+    model = AutoModelForSequenceClassification.from_pretrained(
+        MODEL_NAME, num_labels=2
+    )
+    print("Model loaded OK:", type(model).__name__)
+    n_params = sum(p.numel() for p in model.parameters())
+    print(f"Total parameters: {n_params:,}")
+
+    sample_sentences = [
+        "This product completely exceeded my expectations, I love it!",
+        "Terrible experience, the app crashed every five minutes.",
+        "It's okay, nothing special but does the job.",
+    ]
+
+    print("\n--- Tokenizing sample sentences ---")
+    encoded = tokenizer(
+        sample_sentences,
+        padding=True,
+        truncation=True,
+        max_length=64,
+        return_tensors="pt",
+    )
+
+    for i, sent in enumerate(sample_sentences):
+        print(f"\nSentence {i+1}: {sent!r}")
+        tokens = tokenizer.convert_ids_to_tokens(encoded["input_ids"][i])
+        print("Tokens:        ", tokens)
+        print("Input IDs:     ", encoded["input_ids"][i].tolist())
+        print("Attention mask:", encoded["attention_mask"][i].tolist())
+
+    print("\nAll checks passed: tokenizer + model load without errors, "
+          "and tokenization produces expected input_ids/attention_mask shapes.")
+    print("input_ids shape:", tuple(encoded["input_ids"].shape))
+    print("attention_mask shape:", tuple(encoded["attention_mask"].shape))
+
+if __name__ == "__main__":
+    main()
+  for this ifle do i need ot make any vhnages ?
+
+No. Based on your internship instructions, you do not need to change load_and_tokenize_check.py. It already does exactly what is required.
+
+Let's go through it step by step.
+
+Step 1: Does it load DistilBERT?
+Requirement:
+
+Install transformers + datasets; load distilbert-base-uncased + tokenizer without errors.
+
+Your file has:
+
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+and
+
+model = AutoModelForSequenceClassification.from_pretrained(
+    MODEL_NAME,
+    num_labels=2
+)
+✅ Requirement satisfied.
+
+Step 2: Does it tokenize sample sentences?
+Requirement:
+
+Tokenize 2–3 sample sentences.
+
+Your file has:
+
+sample_sentences = [
+    "This product completely exceeded my expectations, I love it!",
+    "Terrible experience, the app crashed every five minutes.",
+    "It's okay, nothing special but does the job.",
+]
+That's 3 sentences.
+
+✅ Requirement satisfied.
+
+Step 3: Does it print Input IDs?
+Requirement:
+
+Inspect input IDs.
+
+Your code:
+
+print("Input IDs:     ", encoded["input_ids"][i].tolist())
+✅ Yes.
+
+Step 4: Does it print Attention Masks?
+Requirement:
+
+Inspect attention mask.
+
+Your code:
+
+print("Attention mask:", encoded["attention_mask"][i].tolist())
+✅ Yes.
+
+Step 5: Does it prove the tokenizer loaded?
+Your code prints
+
+Tokenizer loaded OK:
+and
+
+Model loaded OK:
+which is exactly the proof your mentor wants.
+
+✅ Yes.
+
+Step 6: Does it create a classification head?
+The internship specifically says
+
+pretrained model + a small classification head
+
+Your code uses
+
+AutoModelForSequenceClassification
+with
+
+num_labels=2
+This automatically adds a classification head.
+
+✅ Perfect.
+
+So do you change anything?
+No.
+
+Leave it exactly as it is.
+
+The only thing you need to do is run it.
+
+For example:
+
+python load_and_tokenize_check.py
+or
+
+python3 load_and_tokenize_check.py
+Then save the output
+Copy the terminal output into a file such as
+
+finetune/logs/tokenize_log.txt
+Example:
+
+Python: 3.12.1
+Torch: 2.7.0
+
+Loading tokenizer: distilbert-base-uncased ...
+Tokenizer loaded OK: DistilBertTokenizerFast
+
+Loading model...
+Model loaded OK: DistilBertForSequenceClassification
+
+Sentence 1:
+Input IDs: [...]
+Attention mask: [...]
+
+Sentence 2:
+Input IDs: [...]
+Attention mask: [...]
+
+Sentence 3:
+Input IDs: [...]
+Attention mask: [...]
+
+All checks passed...
+Commit that log to GitHub.
+
+Your next file to check is make_splits_and_balance_table.py. That one may need a small adjustment depending on the name and location of your cleaned dataset.
+
+
+
+Pasted text(65).txt
+Document
+ what about this 
+
+i dont have an sawer to ur question becaus ei dont know i dont think i have one hwo can u knwo ofor sure?
+
+You're right—I can't know for sure. I was making an assumption based on how these projects are usually structured. Let's verify instead of guessing.
+
+Option 1 (Best): Show me your GitHub repository
+Send me either:
+
+the GitHub repository link, or
+
+a screenshot of your project folders in VS Code or GitHub.
+
+I can then tell you exactly where your cleaned dataset is (or whether you even have one).
+
+Option 2: Check it yourself (takes 30 seconds)
+Open your project in VS Code and look for files with names like:
+
+cleaned_data.csv
+
+cleaned_dataset.csv
+
+dataset.csv
+
+train.csv
+
+sentiment.csv
+
+reviews.csv
+
+any .csv file
+
+If you don't see any, use Ctrl + Shift + F and search for:
+
+read_csv(
+This will show every place your project reads a CSV file. The filename inside pd.read_csv(...) is usually your dataset.
+
+Option 3: If you're using GitHub
+On your repository page, press t (or use the search bar) and search for:
+
+.csv
+or search for:
+
+read_csv
+If you don't have a cleaned dataset
+That's okay. It probably means it was never committed to GitHub, or it was generated locally in a previous week's task.
+
+We'll simply recreate it before doing the 70/15/15 split.
+
+The easiest solution: send me your GitHub repository link, and I'll tell you exactly:
+
+whether you already have the cleaned dataset,
+
+where it is,
+
+and what command you should run next.
+
+
+Raghad-M461/sentiment-analysis-project.git
+
+Worked for 31s
+I checked your GitHub repository. On the current main branch, I can see Python files and folders such as app, embeddings, preprocessing.py, and train_and_save.py, but there is no visible .csv dataset or data folder in the repository root. 
+
+So, based on what is publicly visible, you most likely do not currently have a cleaned dataset saved in GitHub.
+
+What to do next
+Step 1 — Open your project in VS Code
+Open the terminal inside the repository and create the new branch:
+
+git checkout -b feature/finetuning
+Step 2 — Search your computer for a dataset
+In VS Code, press:
+
+Ctrl + Shift + F
+Search for:
+
+read_csv
+Also search for:
+
+load_dataset
+This will show how your earlier scripts obtained their data.
+
+Look especially inside:
+
+sentiment_analysis.py
+train_and_save.py
+preprocessing.py
+Your repository already contains these files, so one of them may generate the dataset directly in Python instead of reading a CSV. 
+
+Step 3 — Check for untracked local files
+Run:
+
+git status --untracked-files=all
+Then run:
+
+dir /s /b *.csv
+On Mac or Linux, use:
+
+find . -name "*.csv"
+This will find CSV files that may exist on your computer but were never uploaded to GitHub.
+
+Important
+Do not run make_splits_and_balance_table.py yet. That script requires an input CSV:
+
+--input path/to/cleaned_data.csv
+Your uploaded script confirms that it expects an existing cleaned CSV before creating the 70/15/15 split. 
+
+
+Run these two commands first and send me the output:
+
+git status --untracked-files=all
+dir /s /b *.csv
+
+what u asked be to do is not woring
+
+Sorry — the commands I gave only work when the repository is downloaded and opened in a terminal. If you are working only on the GitHub website, they will not work there.
+
+I checked your repository again. There is currently no CSV dataset uploaded on the main branch. The repository contains Python scripts such as preprocessing.py, sentiment_analysis.py, and train_and_save.py, but no visible data folder or cleaned dataset. 
+
+Do this instead
+Step 1: Download your repository
+On GitHub:
+
+Open your repository.
+
+Click the green Code button.
+
+Click Download ZIP.
+
+Extract the ZIP file.
+
+Open the extracted folder in VS Code.
+
+Step 2: Open the VS Code terminal
+In VS Code, click:
+
+Terminal → New Terminal
+You should see the repository folder name in the terminal.
+
+Step 3: Check whether a CSV exists
+Since you are using Windows, run:
+
+dir /s *.csv
+Do not use:
+
+dir /s /b *.csv
+unless you are using the normal Windows Command Prompt. PowerShell can sometimes interpret commands differently.
+
+Step 4: Check what data the old project uses
+Open these files manually in VS Code:
+
+train_and_save.py
+sentiment_analysis.py
+preprocessing.py
+Look for something like:
+
+pd.read_csv(...)
+or:
+
+texts = [...]
+labels = [...]
+If you see texts and labels written directly in Python, your old project used a small built-in dataset instead of a CSV.
+
+Most likely result
+Based on the current GitHub repository, you probably need to create and save a cleaned CSV first before running make_splits_and_balance_table.py. The splitting script cannot run without an input CSV because its --input argument is required. 
+
+
+Send me a screenshot of your VS Code files or copy the contents of train_and_save.py, and I’ll identify the dataset directly.
+
+
+
+Pasted text(66).txt
+Document
+
+Perfect! This is exactly what we needed. 🎉
+
+The file you uploaded is your cleaned dataset. It contains the columns:
+
+text,label,source,category
+with sentiment labels such as Positive, Negative, and Neutral. 
+
+
+That means you do not need to create a cleaned dataset—you already have one.
+
+Now you can use make_splits_and_balance_table.py
+Since your dataset has the expected column names (text and label), you do not need to modify the script.
+
+Step 1
+Save this dataset as a CSV in your project, for example:
+
+data/cleaned_data.csv
+Step 2
+Open a terminal in your project folder and run:
+
+python make_splits_and_balance_table.py --input data/cleaned_data.csv
+or, if the script is in another folder, adjust the path accordingly.
+
+Step 3
+The script will automatically create:
+
+data/
+├── train.csv
+├── val.csv
+├── test.csv
+└── class_balance_table.csv
+These satisfy the internship requirements for:
+
+✅ 70/15/15 train/validation/test split
+
+✅ Frozen test set
+
+✅ Class balance table
+
+Step 4
+Next, run:
+
+python load_and_tokenize_check.py
+If it runs successfully, save the terminal output as:
+
+finetune/logs/tokenize_log.txt
+One important question
+The file you uploaded is named Pasted text(66).txt, not a .csv file.
+
+Is this dataset already saved somewhere in your project as a .csv file, or did you just copy and paste its contents into ChatGPT?
+
+Your answer changes the next step:
+
+If it's already a .csv file, you're ready to run the split script.
+
+If it's only copied text, I'll show you how to save it as cleaned_data.csv in less than a minute.
+
+
+sentiment_dataset_enriched.csv   this is what wasd he file was called
+
+Excellent—that answers it.
+
+Your cleaned dataset is:
+
+sentiment_dataset_enriched.csv
+So you already have the dataset. There's no need to create one.
+
+Your make_splits_and_balance_table.py should work without any code changes.
+Just run it and point it to your dataset.
+
+If sentiment_dataset_enriched.csv is in the same folder as the script:
+
+python make_splits_and_balance_table.py --input sentiment_dataset_enriched.csv
+If it's inside a data folder:
+
+python make_splits_and_balance_table.py --input data/sentiment_dataset_enriched.csv
+If it runs successfully, it should generate files like:
+data/
+├── train.csv
+├── val.csv
+├── test.csv
+└── class_balance_table.csv
+Then you're ready to run:
+
+python load_and_tokenize_check.py
+and save its output as your tokenize_log.txt.
+
+One last thing
+Can you tell me where sentiment_dataset_enriched.csv is located?
+
+For example:
+
+In the project root:
+
+sentiment_dataset_enriched.csv
+Or:
+
+data/sentiment_dataset_enriched.csv
+Or somewhere else?
+
+Or, even easier, send me a screenshot of your VS Code file explorer, and I'll give you the exact command to run.
+
+
+different branch do ineed to add it to the new brach ?
+
+Yes, if your internship work is on a new branch (feature/finetuning), then sentiment_dataset_enriched.csv needs to be available in that branch.
+
+Here are the two cases:
+
+Case 1: The file exists only on another branch
+You need to bring it into feature/finetuning.
+
+The easiest way is:
+
+Switch to your new branch:
+
+git checkout feature/finetuning
+Copy the file from the other branch:
+
+git checkout main -- sentiment_dataset_enriched.csv
+Replace main with the name of the branch that actually contains the file if it's different.
+
+Commit it:
+
+git add sentiment_dataset_enriched.csv
+git commit -m "Add enriched sentiment dataset"
+Case 2: The file only exists on your computer (not committed to Git)
+Just copy sentiment_dataset_enriched.csv into your project folder while you're on feature/finetuning, then:
+
+git add sentiment_dataset_enriched.csv
+git commit -m "Add enriched sentiment dataset"
+Can you tell me one thing?
+Is sentiment_dataset_enriched.csv:
+
+Already committed to another Git branch?
+
+Only on your computer (not in Git)?
+
+Not sure?
+
+I'll tell you the exact next command based on your answer.
+
+
+text,label,source,category
+"Oh fantastic, another update that breaks everything.",Negative,enriched_manual,sarcasm
+"Looks nice, shame it stops working after a week.",Negative,enriched_manual,mixed_lean_negative
+"Not what I expected, and not in a good way.",Negative,enriched_manual,negation
+Spent more time on hold than actually using it.,Negative,enriched_manual,implicit
+The battery dies faster than my motivation on Mondays.,Negative,enriched_manual,colloquial
+Worse than the cheap one it replaced.,Negative,enriched_manual,comparative
+"Sure, it works, if you enjoy waiting ten minutes to load.",Negative,enriched_manual,sarcasm
+"Great in theory, useless in practice.",Negative,enriched_manual,contrast
+Three emails to support and still no reply.,Negative,enriched_manual,implicit
+It overheats if you so much as look at it.,Negative,enriched_manual,hyperbole
+Save your money and buy literally anything else.,Negative,enriched_manual,advice
+The instructions might as well have been in another language.,Negative,enriched_manual,implicit
+Stopped charging on day two. Day. Two.,Negative,enriched_manual,emphasis
+"Feels cheap, sounds cheap, is cheap.",Negative,enriched_manual,repetition
+"I wanted to love it, I really did.",Negative,enriched_manual,implicit_disappointment
+The app logs me out every five minutes.,Negative,enriched_manual,descriptive
+"Paid for express shipping, arrived two weeks late.",Negative,enriched_manual,contrast
+Half the features are locked behind a paywall.,Negative,enriched_manual,descriptive
+Returned it the same day it arrived.,Negative,enriched_manual,implicit
+Customer service hung up on me twice.,Negative,enriched_manual,descriptive
+Louder than a jet engine and just as relaxing.,Negative,enriched_manual,sarcasm_comparative
+"It's fine, if your standards are on the floor.",Negative,enriched_manual,sarcasm
+Buttons stopped responding within a month.,Negative,enriched_manual,descriptive
+The 'waterproof' case leaked immediately.,Negative,enriched_manual,irony_quotes
+Can't believe they charge money for this.,Negative,enriched_manual,implicit
+"Crashes constantly, support blames my phone.",Negative,enriched_manual,descriptive
+"Looks great in photos, falls apart in person.",Negative,enriched_manual,mixed_lean_negative
+The free trial was the best part.,Negative,enriched_manual,sarcasm_implicit
+"Slower with every update, not faster.",Negative,enriched_manual,negation_comparative
+Avoid unless you enjoy frustration.,Negative,enriched_manual,advice
+A broken onboarding overall.,Negative,original_manual,template
+A confusing platform overall.,Negative,original_manual,template
+A disappointing product overall.,Negative,original_manual,template
+A frustrating dashboard overall.,Negative,original_manual,template
+A frustrating delivery overall.,Negative,original_manual,template
+A frustrating website overall.,Negative,original_manual,template
+A poor quality overall.,Negative,original_manual,template
+A poor website overall.,Negative,original_manual,template
+A rude tool overall.,Negative,original_manual,template
+A slow delivery overall.,Negative,original_manual,template
+A slow experience overall.,Negative,original_manual,template
+An unreliable app overall.,Negative,original_manual,template
+Honestly the customer service is rude.,Negative,original_manual,template
+Honestly the dashboard is unreliable.,Negative,original_manual,template
+Honestly the software is frustrating.,Negative,original_manual,template
+Honestly the tool is unreliable.,Negative,original_manual,template
+I found the customer service really frustrating.,Negative,original_manual,template
+I found the dashboard really rude.,Negative,original_manual,template
+I found the delivery really terrible.,Negative,original_manual,template
+I found the onboarding really horrible.,Negative,original_manual,template
+I found the price really broken.,Negative,original_manual,template
+I found the price really horrible.,Negative,original_manual,template
+I found the update really broken.,Negative,original_manual,template
+Such a disappointing software.,Negative,original_manual,template
+Such a frustrating dashboard.,Negative,original_manual,template
+Such a rude dashboard.,Negative,original_manual,template
+Such a rude software.,Negative,original_manual,template
+Such a slow quality.,Negative,original_manual,template
+Such a slow website.,Negative,original_manual,template
+Such a terrible product.,Negative,original_manual,template
+Such an unreliable tool.,Negative,original_manual,template
+The interface felt disappointing to me.,Negative,original_manual,template
+The platform was frustrating.,Negative,original_manual,template
+The service felt useless to me.,Negative,original_manual,template
+The support team felt terrible to me.,Negative,original_manual,template
+The tool felt frustrating to me.,Negative,original_manual,template
+The website was horrible.,Negative,original_manual,template
+Their customer service was broken.,Negative,original_manual,template
+Their experience was poor.,Negative,original_manual,template
+Their product was awful.,Negative,original_manual,template
+"The package includes a charger, a cable, and a manual.",Neutral,enriched_manual,factual
+"It comes in three colors: black, white, and grey.",Neutral,enriched_manual,factual
+The device weighs about two hundred grams.,Neutral,enriched_manual,factual
+Shipping usually takes three to five business days.,Neutral,enriched_manual,factual
+The app is available on both Android and iOS.,Neutral,enriched_manual,factual
+It runs on two AA batteries.,Neutral,enriched_manual,factual
+The warranty covers one year from purchase.,Neutral,enriched_manual,factual
+You can change the language in the settings menu.,Neutral,enriched_manual,instruction
+The screen measures six inches diagonally.,Neutral,enriched_manual,factual
+The subscription renews automatically each month.,Neutral,enriched_manual,factual
+There are two USB ports on the back.,Neutral,enriched_manual,factual
+The manual is also available as a PDF online.,Neutral,enriched_manual,factual
+It supports files up to two gigabytes.,Neutral,enriched_manual,factual
+The store opens at nine and closes at six.,Neutral,enriched_manual,factual
+The update is scheduled for next Tuesday.,Neutral,enriched_manual,factual
+Each box contains twelve units.,Neutral,enriched_manual,factual
+The software requires at least eight gigabytes of RAM.,Neutral,enriched_manual,factual
+It connects over Bluetooth or Wi-Fi.,Neutral,enriched_manual,factual
+The return window is thirty days.,Neutral,enriched_manual,factual
+The model number is printed on the base.,Neutral,enriched_manual,factual
+Does this come with a wall adapter?,Neutral,enriched_manual,question
+Is the app free to download?,Neutral,enriched_manual,question
+How long does the battery take to charge?,Neutral,enriched_manual,question
+Can I use this outside the country?,Neutral,enriched_manual,question
+What size should I order for a teenager?,Neutral,enriched_manual,question
+Is there a version for Mac?,Neutral,enriched_manual,question
+Do you ship to rural addresses?,Neutral,enriched_manual,question
+When will the next model be released?,Neutral,enriched_manual,question
+Are spare parts sold separately?,Neutral,enriched_manual,question
+Which port is for the headphones?,Neutral,enriched_manual,question
+"If it freezes, hold the power button for ten seconds.",Neutral,enriched_manual,instruction
+"To reset it, press both buttons at once.",Neutral,enriched_manual,instruction
+You'll need an adapter for European outlets.,Neutral,enriched_manual,instruction
+Install the app before connecting the device.,Neutral,enriched_manual,instruction
+Charge it fully before the first use.,Neutral,enriched_manual,instruction
+Update the firmware to enable the new mode.,Neutral,enriched_manual,instruction
+Keep the receipt in case you need to return it.,Neutral,enriched_manual,instruction
+Pair it with the app to see usage stats.,Neutral,enriched_manual,instruction
+Restart the router if the connection drops.,Neutral,enriched_manual,instruction
+Register online to activate the warranty.,Neutral,enriched_manual,instruction
+It's about the same size as a deck of cards.,Neutral,enriched_manual,comparative_neutral
+The newer version looks identical to the old one.,Neutral,enriched_manual,comparative_neutral
+It's roughly the price of a typical mid-range phone.,Neutral,enriched_manual,comparative_neutral
+The interface is similar to the previous release.,Neutral,enriched_manual,comparative_neutral
+It uses the same charger as the last model.,Neutral,enriched_manual,comparative_neutral
+"Compared spec for spec, the two are nearly identical.",Neutral,enriched_manual,comparative_neutral
+The color in person matches the website.,Neutral,enriched_manual,factual
+It's neither the cheapest nor the most expensive option.,Neutral,enriched_manual,comparative_neutral
+I bought this for my office last March.,Neutral,enriched_manual,context
+We use it mainly for video calls.,Neutral,enriched_manual,context
+It replaced an older unit we'd had for years.,Neutral,enriched_manual,context
+"I ordered two, one for home and one for work.",Neutral,enriched_manual,context
+The company is based in Germany.,Neutral,enriched_manual,factual
+This is the second one I've owned.,Neutral,enriched_manual,context
+It arrived in standard cardboard packaging.,Neutral,enriched_manual,context
+I've been using it for about a week now.,Neutral,enriched_manual,context
+The seller included a handwritten thank-you note.,Neutral,enriched_manual,context
+It was a gift from my brother.,Neutral,enriched_manual,context
+The firmware version is listed in the about page.,Neutral,enriched_manual,factual
+I set it up over the weekend.,Neutral,enriched_manual,context
+The buttons are arranged along the right edge.,Neutral,enriched_manual,descriptive
+A small light blinks while it's charging.,Neutral,enriched_manual,descriptive
+The fan turns on automatically under load.,Neutral,enriched_manual,descriptive
+The cable is about one meter long.,Neutral,enriched_manual,factual
+There's a headphone jack on the bottom.,Neutral,enriched_manual,descriptive
+It ships from a warehouse in the next state.,Neutral,enriched_manual,factual
+The default password is on the sticker underneath.,Neutral,enriched_manual,instruction
+The box is sealed with tamper-evident tape.,Neutral,enriched_manual,descriptive
+It supports up to five user profiles.,Neutral,enriched_manual,factual
+The clock resets if you unplug it.,Neutral,enriched_manual,descriptive
+"Honestly didn't expect much, but this completely won me over.",Positive,enriched_manual,negation_contrast
+"It's not perfect, yet I'd buy it again in a heartbeat.",Positive,enriched_manual,mixed_lean_positive
+The battery lasts forever and charging is lightning fast.,Positive,enriched_manual,intensifier
+Way better than the model I had before.,Positive,enriched_manual,comparative
+Setup took two minutes and everything just worked.,Positive,enriched_manual,implicit
+"Support actually called me back within the hour, rare these days.",Positive,enriched_manual,implicit
+"Five stars, no complaints whatsoever.",Positive,enriched_manual,negation_phrasing
+"I was skeptical, but the results speak for themselves.",Positive,enriched_manual,contrast
+"Smooth, quiet, and barely uses any power.",Positive,enriched_manual,descriptive
+My whole team switched to it after seeing mine.,Positive,enriched_manual,implicit_social_proof
+"Can't fault it, does exactly what it promises.",Positive,enriched_manual,negation_to_positive
+The update fixed every issue I had.,Positive,enriched_manual,temporal
+"Cheap price, premium feel.",Positive,enriched_manual,contrast
+Held up perfectly after a year of daily use.,Positive,enriched_manual,durability
+Even my technophobe dad figured it out instantly.,Positive,enriched_manual,implicit
+Worth every penny and then some.,Positive,enriched_manual,idiomatic
+"Delivery was a day early, which never happens.",Positive,enriched_manual,negation_context
+Crashes? Not once since I installed it.,Positive,enriched_manual,negation_to_positive
+The screen is gorgeous in direct sunlight.,Positive,enriched_manual,descriptive
+Customer service turned my bad week around.,Positive,enriched_manual,contrast
+Lightweight enough to carry all day without noticing.,Positive,enriched_manual,descriptive
+It paid for itself within a month.,Positive,enriched_manual,implicit
+Quieter than a whisper and twice as fast.,Positive,enriched_manual,comparative_intensifier
+I've recommended it to literally everyone.,Positive,enriched_manual,implicit
+"No regrets, best purchase this year.",Positive,enriched_manual,negation_phrasing
+The app finally feels polished after the redesign.,Positive,enriched_manual,temporal
+"Tastes exactly like the real thing, maybe better.",Positive,enriched_manual,comparative
+"Returns were painless, refund hit my account same day.",Positive,enriched_manual,positive_on_negative_topic
+"Sturdy build, you can tell they didn't cut corners.",Positive,enriched_manual,implicit
+Does the job beautifully and stays out of the way.,Positive,enriched_manual,descriptive
+A fantastic quality overall.,Positive,original_manual,template
+A friendly update overall.,Positive,original_manual,template
+A great website overall.,Positive,original_manual,template
+A helpful delivery overall.,Positive,original_manual,template
+A perfect service overall.,Positive,original_manual,template
+A reliable service overall.,Positive,original_manual,template
+A wonderful onboarding overall.,Positive,original_manual,template
+An impressive product overall.,Positive,original_manual,template
+Honestly the dashboard is great.,Positive,original_manual,template
+Honestly the service is impressive.,Positive,original_manual,template
+Honestly the setup process is perfect.,Positive,original_manual,template
+I found the delivery really impressive.,Positive,original_manual,template
+I found the experience really outstanding.,Positive,original_manual,template
+I found the platform really great.,Positive,original_manual,template
+I found the service really wonderful.,Positive,original_manual,template
+I found the tool really impressive.,Positive,original_manual,template
+I found the update really reliable.,Positive,original_manual,template
+Such an impressive platform.,Positive,original_manual,template
+Such an impressive support team.,Positive,original_manual,template
+Such a reliable service.,Positive,original_manual,template
+The dashboard felt reliable to me.,Positive,original_manual,template
+The experience felt helpful to me.,Positive,original_manual,template
+The experience was friendly.,Positive,original_manual,template
+The interface felt great to me.,Positive,original_manual,template
+The interface was perfect.,Positive,original_manual,template
+The price felt perfect to me.,Positive,original_manual,template
+The price was excellent.,Positive,original_manual,template
+The quality felt reliable to me.,Positive,original_manual,template
+The service felt outstanding to me.,Positive,original_manual,template
+The service was friendly.,Positive,original_manual,template
+The software was excellent.,Positive,original_manual,template
+The update felt wonderful to me.,Positive,original_manual,template
+Their dashboard was reliable.,Positive,original_manual,template
+Their delivery was smooth.,Positive,original_manual,template
+Their experience was outstanding.,Positive,original_manual,template
+Their onboarding was friendly.,Positive,original_manual,template
+Their team was smooth.,Positive,original_manual,template
+Their tool was impressive.,Positive,original_manual,template
+Their update was helpful.,Positive,original_manual,template
+Their update was reliable.,Positive,original_manual,template
+
+
+Close
