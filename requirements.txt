@@ -1,6 +1,10 @@
 nltk
 gensim
 numpy
+pandas
 scikit-learn
 sentence-transformers
+torch
+transformers
+datasets
 
