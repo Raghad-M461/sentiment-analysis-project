@@ -1,5 +1,3 @@
-
-
 from pathlib import Path
 
 import pandas as pd
@@ -16,7 +14,6 @@ RANDOM_SEED = 42
 
 
 def validate_dataset(df: pd.DataFrame) -> None:
-
     required_columns = {TEXT_COLUMN, LABEL_COLUMN}
     missing_columns = required_columns - set(df.columns)
 
@@ -30,14 +27,14 @@ def validate_dataset(df: pd.DataFrame) -> None:
         raise ValueError("The dataset is empty.")
 
     if df[TEXT_COLUMN].isna().any():
-        missing_text_count = df[TEXT_COLUMN].isna().sum()
+        missing_text_count = int(df[TEXT_COLUMN].isna().sum())
         raise ValueError(
             f"The '{TEXT_COLUMN}' column contains "
             f"{missing_text_count} missing value(s)."
         )
 
     if df[LABEL_COLUMN].isna().any():
-        missing_label_count = df[LABEL_COLUMN].isna().sum()
+        missing_label_count = int(df[LABEL_COLUMN].isna().sum())
         raise ValueError(
             f"The '{LABEL_COLUMN}' column contains "
             f"{missing_label_count} missing value(s)."
@@ -47,11 +44,14 @@ def validate_dataset(df: pd.DataFrame) -> None:
 
     if len(class_counts) < 2:
         raise ValueError(
+            "The dataset must contain at least two sentiment classes."
         )
 
     if (class_counts < 4).any():
+        small_classes = class_counts[class_counts < 4].to_dict()
         raise ValueError(
-       
+            "Every class must contain at least four rows for a stratified "
+            f"70/15/15 split. Classes with too few rows: {small_classes}"
         )
 
 
@@ -60,7 +60,6 @@ def create_class_balance_table(
     validation_df: pd.DataFrame,
     test_df: pd.DataFrame,
 ) -> pd.DataFrame:
-
     splits = {
         "Train": train_df,
         "Validation": validation_df,
@@ -93,15 +92,14 @@ def create_class_balance_table(
 
 
 def main() -> None:
-
     print("=" * 60)
     print("Fine-Tuning Dataset Preparation")
     print("=" * 60)
 
     if not INPUT_FILE.exists():
         raise FileNotFoundError(
-            f"Could not find '{INPUT_FILE}'.\n"
-           
+            f"Could not find '{INPUT_FILE}'. "
+            "Place the cleaned dataset in the repository root."
         )
 
     print(f"\nLoading dataset: {INPUT_FILE}")
@@ -115,7 +113,6 @@ def main() -> None:
     print("\nOverall class distribution:")
     print(df[LABEL_COLUMN].value_counts())
 
-   
     train_df, temporary_df = train_test_split(
         df,
         test_size=0.30,
@@ -123,13 +120,16 @@ def main() -> None:
         stratify=df[LABEL_COLUMN],
     )
 
-   
     validation_df, test_df = train_test_split(
         temporary_df,
         test_size=0.50,
         random_state=RANDOM_SEED,
         stratify=temporary_df[LABEL_COLUMN],
     )
+
+    train_df = train_df.reset_index(drop=True)
+    validation_df = validation_df.reset_index(drop=True)
+    test_df = test_df.reset_index(drop=True)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -151,6 +151,9 @@ def main() -> None:
     class_balance_table.to_csv(balance_path, index=False)
 
     total_rows = len(df)
+
+    if len(train_df) + len(validation_df) + len(test_df) != total_rows:
+        raise RuntimeError("The split row counts do not match the original dataset.")
 
     print("\n" + "=" * 60)
     print("Split Summary")
