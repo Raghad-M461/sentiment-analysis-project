@@ -1,4 +1,4 @@
-name: Fine-Tuning Training
+name: Fine-Tuning Training and Evaluation
 
 on:
   push:
@@ -62,6 +62,19 @@ jobs:
           echo ""
           echo "All four dataset files were generated successfully."
 
+      - name: Copy dataset files to repository root
+        run: |
+          cp data/train.csv train.csv
+          cp data/validation.csv validation.csv
+          cp data/test_frozen.csv test_frozen.csv
+          cp data/class_balance_table.csv class_balance_table.csv
+
+          echo "Dataset files copied to repository root."
+          ls -lh train.csv
+          ls -lh validation.csv
+          ls -lh test_frozen.csv
+          ls -lh class_balance_table.csv
+
       - name: Load model and tokenize samples
         run: |
           mkdir -p finetune
@@ -84,14 +97,47 @@ jobs:
           echo "Epoch metrics:"
           cat finetune/epoch_metrics.json
 
-      - name: Upload fine-tuning training deliverables
+      - name: Evaluate best checkpoint on frozen test set
+        run: |
+          python finetune/evaluate_finetuned.py 2>&1 | tee finetune/evaluation.log
+
+      - name: Verify evaluation deliverables
+        run: |
+          test -f finetune/evaluation.log
+          test -f finetune/classification_report.txt
+          test -f finetune/confusion_matrix.png
+          test -f finetune/evaluation_results.json
+          test -f finetune/results.md
+
+          echo "Classification report:"
+          cat finetune/classification_report.txt
+
+          echo ""
+          echo "Evaluation completed successfully."
+
+          echo ""
+          echo "Generated evaluation files:"
+          ls -lh finetune/classification_report.txt
+          ls -lh finetune/confusion_matrix.png
+          ls -lh finetune/evaluation_results.json
+          ls -lh finetune/results.md
+          ls -lh finetune/evaluation.log
+
+      - name: Upload fine-tuning training and evaluation deliverables
         uses: actions/upload-artifact@v4
         with:
-          name: finetuning-training-deliverables
+          name: finetuning-complete-deliverables
           path: |
+            finetune/load_and_tokenize.log
             finetune/training.log
+            finetune/evaluation.log
             finetune/epoch_metrics.json
             finetune/best_checkpoint/
+            finetune/classification_report.txt
+            finetune/confusion_matrix.png
+            finetune/evaluation_results.json
+            finetune/results.md
+            finetune/comparison_plan.md
             data/train.csv
             data/validation.csv
             data/test_frozen.csv
