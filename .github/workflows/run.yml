@@ -1,4 +1,4 @@
-name: Fine-Tuning Training and Evaluation
+name: Final Model Comparison
 
 on:
   push:
@@ -10,8 +10,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  train-distilbert:
+  compare-models:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v4
@@ -19,29 +20,35 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Create dataset splits
+      - name: Create frozen splits
         run: python make_splits_and_balance_table.py
 
       - name: Fine-tune DistilBERT
         run: python finetune/train_distilbert.py
 
-      - name: Evaluate model
+      - name: Evaluate DistilBERT
         run: python finetune/evaluate_finetuned.py
 
-      - name: Upload artifacts
+      - name: Compare all models
+        run: python finetune/final_comparison.py
+
+      - name: Upload comparison results
         uses: actions/upload-artifact@v4
         with:
-          name: finetuning-results
+          name: final-model-comparison-results
           path: |
-            finetune/best_checkpoint/
+            finetune/evaluation_results.json
             finetune/classification_report.txt
             finetune/confusion_matrix.png
-            finetune/evaluation_results.json
-            finetune/results.md
-            finetune/epoch_metrics.json
+            finetune/final_comparison_results.csv
+            finetune/final_comparison_results.json
+            finetune/negation_comparison.csv
+          if-no-files-found: error
+          retention-days: 30
