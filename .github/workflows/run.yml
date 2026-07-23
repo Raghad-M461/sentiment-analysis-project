@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - feature/finetuning
-
   pull_request:
     branches:
       - main
-
   workflow_dispatch:
 
 jobs:
@@ -17,11 +15,9 @@ jobs:
     timeout-minutes: 60
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
@@ -31,116 +27,30 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Verify original dataset
-        run: |
-          if [ ! -f "sentiment_dataset_enriched.csv" ]; then
-            echo "ERROR: sentiment_dataset_enriched.csv was not found."
-            exit 1
-          fi
+      - name: Create dataset splits
+        run: python make_splits_and_balance_table.py
 
-          echo "Original dataset found successfully."
-          ls -lh sentiment_dataset_enriched.csv
-
-      - name: Create frozen dataset splits
-        run: |
-          python make_splits_and_balance_table.py
-
-      - name: Verify generated dataset files
-        run: |
-          echo "Files inside the data folder:"
-          ls -lh data
-
-          echo ""
-          echo "Class-balance table:"
-          cat data/class_balance_table.csv
-
-          test -f data/train.csv
-          test -f data/validation.csv
-          test -f data/test_frozen.csv
-          test -f data/class_balance_table.csv
-
-          echo ""
-          echo "All four dataset files were generated successfully."
-
-      - name: Copy dataset files to repository root
-        run: |
-          cp data/train.csv train.csv
-          cp data/validation.csv validation.csv
-          cp data/test_frozen.csv test_frozen.csv
-          cp data/class_balance_table.csv class_balance_table.csv
-
-          echo "Dataset files copied to repository root."
-          ls -lh train.csv
-          ls -lh validation.csv
-          ls -lh test_frozen.csv
-          ls -lh class_balance_table.csv
-
-      - name: Load model and tokenize samples
+      - name: Load model and tokenize
         run: |
           mkdir -p finetune
-          python load_and_tokenize_check.py 2>&1 | tee finetune/load_and_tokenize.log
+          python load_and_tokenize_check.py > finetune/load_and_tokenize.log
 
       - name: Fine-tune DistilBERT
         run: |
-          python finetune/train_distilbert.py 2>&1 | tee finetune/training.log
+          python finetune/train_distilbert.py > finetune/training.log
 
-      - name: Verify training deliverables
+      - name: Evaluate model
         run: |
-          test -f finetune/training.log
-          test -f finetune/epoch_metrics.json
-          test -d finetune/best_checkpoint
+          python finetune/evaluate_finetuned.py > finetune/evaluation.log
 
-          echo "Best checkpoint files:"
-          ls -lh finetune/best_checkpoint
-
-          echo ""
-          echo "Epoch metrics:"
-          cat finetune/epoch_metrics.json
-
-      - name: Evaluate best checkpoint on frozen test set
+      - name: Compare all models
         run: |
-          python finetune/evaluate_finetuned.py 2>&1 | tee finetune/evaluation.log
+          python finetune/final_comparison.py > finetune/final_comparison.log
 
-      - name: Verify evaluation deliverables
-        run: |
-          test -f finetune/evaluation.log
-          test -f finetune/classification_report.txt
-          test -f finetune/confusion_matrix.png
-          test -f finetune/evaluation_results.json
-          test -f finetune/results.md
-
-          echo "Classification report:"
-          cat finetune/classification_report.txt
-
-          echo ""
-          echo "Evaluation completed successfully."
-
-          echo ""
-          echo "Generated evaluation files:"
-          ls -lh finetune/classification_report.txt
-          ls -lh finetune/confusion_matrix.png
-          ls -lh finetune/evaluation_results.json
-          ls -lh finetune/results.md
-          ls -lh finetune/evaluation.log
-
-      - name: Upload fine-tuning training and evaluation deliverables
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: finetuning-complete-deliverables
           path: |
-            finetune/load_and_tokenize.log
-            finetune/training.log
-            finetune/evaluation.log
-            finetune/epoch_metrics.json
-            finetune/best_checkpoint/
-            finetune/classification_report.txt
-            finetune/confusion_matrix.png
-            finetune/evaluation_results.json
-            finetune/results.md
-            finetune/comparison_plan.md
-            data/train.csv
-            data/validation.csv
-            data/test_frozen.csv
-            data/class_balance_table.csv
-          if-no-files-found: error
-          retention-days: 30
+            finetune/
+            data/
